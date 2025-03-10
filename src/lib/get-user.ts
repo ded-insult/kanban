@@ -71,11 +71,12 @@ export const useGetMeApi = () => {
     try {
       //   TODO: Сделать получение пользователя
       //   const response = await fetch(`${VITE_BACKEND_URL}/users/get-user`);
-      await new Promise((res) =>
-        setTimeout(() => {
-          res(null);
-        }, 500)
-      );
+
+      // await new Promise((res) =>
+      //   setTimeout(() => {
+      //     res(null);
+      //   }, 500)
+      // );
 
       // if (!response.ok) {
       //   throw new Error("UserApi error");
