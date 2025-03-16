@@ -4,35 +4,144 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// // FIXME: ДЛЯ ТЕСТОВ 
+// datasource db {
+//   provider = "sqlite"
+//   url      = env("DATABASE_URL_LOCAL")
+// }
+
+// model Board {
+//   id      String        @id @default(cuid())
+//   title   String
+//   columns BoardColumn[] // Связь с колонками
+// }
+
+// model BoardColumn {
+//   id      String @id @default(cuid())
+//   title   String
+//   status  String // Статус колонки
+//   boardId String // Внешний ключ для связи с доской
+//   board   Board  @relation(fields: [boardId], references: [id])
+//   tasks   Task[] // Связь с задачами
+// }
+
+// model Task {
+//   id          String      @id @default(cuid())
+//   title       String
+//   description String?
+//   columnId    String // Внешний ключ для связи с колонкой
+//   column      BoardColumn @relation(fields: [columnId], references: [id])
+// }
+
 generator client {
   provider = "prisma-client-js"
 }
 
-// FIXME: ДЛЯ ТЕСТОВ 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL_LOCAL")
 }
 
+model Role {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  users       User[]       @relation("UserRoles")
+  permissions Permission[] @relation("RolePermissions")
+}
+
+model Permission {
+  id      String @id @default(cuid())
+  name    String @unique
+  roleId  String
+  role    Role   @relation(fields: [roleId], references: [id], name: "RolePermissions", onDelete: Cascade)
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id], name: "BoardPermissions", onDelete: Cascade)
+}
+
+model User {
+  id          String    @id @default(cuid())
+  name        String
+  email       String    @unique
+  roleId      String
+  role        Role      @relation(fields: [roleId], references: [id], name: "UserRoles")
+  boards      Board[]   @relation("UserBoards")
+  ownedBoards Board[]   @relation("OwnedBoards")
+  tasks       Task[]
+  Subtask     Subtask[]
+}
+
 model Board {
-  id      String        @id @default(cuid())
-  title   String
-  columns BoardColumn[] // Связь с колонками
+  id          String        @id @default(cuid())
+  title       String
+  ownerId     String
+  owner       User          @relation(fields: [ownerId], references: [id], name: "OwnedBoards")
+  columns     BoardColumn[]
+  sprints     Sprint[]
+  users       User[]        @relation("UserBoards")
+  Section     Section[]
+  permissions Permission[]  @relation("BoardPermissions")
 }
 
 model BoardColumn {
+  id       String    @id @default(cuid())
+  title    String
+  status   String
+  boardId  String
+  board    Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tasks    Task[]    @relation("ColumnTasks")
+  subtasks Subtask[] @relation("ColumnSubtasks")
+}
+
+model Section {
   id      String @id @default(cuid())
   title   String
-  status  String // Статус колонки
-  boardId String // Внешний ключ для связи с доской
-  board   Board  @relation(fields: [boardId], references: [id])
-  tasks   Task[] // Связь с задачами
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tasks   Task[] @relation("SectionTasks")
 }
 
 model Task {
   id          String      @id @default(cuid())
   title       String
   description String?
-  columnId    String // Внешний ключ для связи с колонкой
-  column      BoardColumn @relation(fields: [columnId], references: [id])
+  columnId    String
+  column      BoardColumn @relation(fields: [columnId], references: [id], name: "ColumnTasks", onDelete: Cascade)
+  sectionId   String?
+  section     Section?    @relation(fields: [sectionId], references: [id], name: "SectionTasks", onDelete: SetNull)
+  assigneeId  String?
+  assignee    User?       @relation(fields: [assigneeId], references: [id])
+  sprintId    String?
+  sprint      Sprint?     @relation(fields: [sprintId], references: [id], name: "SprintTasks", onDelete: SetNull)
+  startDate   DateTime?
+  endDate     DateTime?
+  subtasks    Subtask[]   @relation("TaskSubtasks")
+  approved    Boolean     @default(false)
+}
+
+model Subtask {
+  id           String      @id @default(cuid())
+  title        String
+  description  String?
+  parentTaskId String
+  parentTask   Task        @relation(fields: [parentTaskId], references: [id], name: "TaskSubtasks", onDelete: Cascade)
+  assigneeId   String?
+  assignee     User?       @relation(fields: [assigneeId], references: [id])
+  completed    Boolean     @default(false)
+  columnId     String
+  column       BoardColumn @relation(fields: [columnId], references: [id], name: "ColumnSubtasks", onDelete: Cascade)
+}
+
+model Sprint {
+  id        String   @id @default(cuid())
+  title     String
+  boardId   String
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  backlog   Task[]   @relation("SprintTasks")
+  startDate DateTime
+  endDate   DateTime
 }
