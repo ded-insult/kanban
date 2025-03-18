@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
 ## Пособие по запуску:
 
 - npm ci
@@ -7,7 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 <!--
     Что сделать:
-    1 авторизация
+    + 1 авторизация  (сделана авторизация для обычного юзера и админа, нужно сделать возможность регистрации админа)
     2 связь юзера с доской, возможность добавить юзера к доске
     3 возможность админа создавать рабочих
     4 доска (группа людей связана с ней)

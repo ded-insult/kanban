@@ -2,6 +2,7 @@
 // Доска 1 - школа, доска 2 - университет, доска 3 - секция и тд.
 // каждая доска имеет N Этапов в которых описаваются состояния действий
 
+import { ProtectedRoute } from "@/modules/auth/auth-context";
 import { Boards } from "./boards-async";
 
 // Идет запрос который запрашивает данные о досках, если есть отобразить их. если нет предложить создать свою
@@ -11,8 +12,8 @@ export default function Page() {
 
   // return <div>{!response ? <Boards /> : "Перейти к доске <ссылка>"}</div>;
   return (
-    <div>
+    <ProtectedRoute>
       <Boards />
-    </div>
+    </ProtectedRoute>
   );
 }

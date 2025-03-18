@@ -4,39 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-// generator client {
-//   provider = "prisma-client-js"
-// }
-
-// // FIXME: ДЛЯ ТЕСТОВ 
-// datasource db {
-//   provider = "sqlite"
-//   url      = env("DATABASE_URL_LOCAL")
-// }
-
-// model Board {
-//   id      String        @id @default(cuid())
-//   title   String
-//   columns BoardColumn[] // Связь с колонками
-// }
-
-// model BoardColumn {
-//   id      String @id @default(cuid())
-//   title   String
-//   status  String // Статус колонки
-//   boardId String // Внешний ключ для связи с доской
-//   board   Board  @relation(fields: [boardId], references: [id])
-//   tasks   Task[] // Связь с задачами
-// }
-
-// model Task {
-//   id          String      @id @default(cuid())
-//   title       String
-//   description String?
-//   columnId    String // Внешний ключ для связи с колонкой
-//   column      BoardColumn @relation(fields: [columnId], references: [id])
-// }
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -65,8 +32,8 @@ model Permission {
 
 model User {
   id          String    @id @default(cuid())
-  name        String
-  email       String    @unique
+  name        String    @unique
+  password    String
   roleId      String
   role        Role      @relation(fields: [roleId], references: [id], name: "UserRoles")
   boards      Board[]   @relation("UserBoards")

@@ -1,14 +1,14 @@
-import React from "react";
-import { CreateBoardForm } from "./create-board-form";
 import { ProtectedRoute } from "@/modules/auth/auth-context";
 
 export default function Page() {
   return (
     <ProtectedRoute>
       <div>
-        <h1>Форма для создания доски</h1>
+        <h1>Мои доступы:</h1>
 
-        <CreateBoardForm />
+        <ul>
+          <li></li>
+        </ul>
       </div>
     </ProtectedRoute>
   );

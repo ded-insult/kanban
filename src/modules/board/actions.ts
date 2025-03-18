@@ -16,17 +16,18 @@ const createBoard = async (title: string, names: string[]) => {
   const boards = normalizeStringToBoard(names);
 
   try {
-    const res = await prisma.board.create({
-      data: {
-        title,
-        columns: {
-          create: [...boards],
-        },
-      },
-      include: {
-        columns: true,
-      },
-    });
+    // const res = await prisma.board.create({
+    //   data: {
+    //     title,
+    //     columns: {
+    //       create: [...boards],
+    //     },
+    //   },
+    //   include: {
+    //     columns: true,
+    //   },
+    // });
+    const res = "";
 
     return { success: true, data: res };
   } catch (e) {

@@ -1,11 +1,12 @@
-"use client";
+import { prisma } from "@/lib/prisma";
+import AuthForm from "@/modules/auth/auth-form";
 
-import { Button } from "@/components/ui/button";
+export default async function Home() {
+  const roles = await prisma.role.findMany();
 
-export default function Home() {
   return (
     <div>
-      <Button onClick={() => alert(1)}>btn</Button>
+      <AuthForm roles={roles} />
     </div>
   );
 }

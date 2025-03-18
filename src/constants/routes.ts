@@ -3,4 +3,5 @@ export const routes = {
   boards: "/boards",
   boardsCreate: "/boards/create",
   boardsId: "/boards/:id",
+  permissions: "/permissions",
 };
