@@ -1,18 +1,12 @@
-// TODO: Здесь должен быть набор досок в которых состоит участник:
-// Доска 1 - школа, доска 2 - университет, доска 3 - секция и тд.
-// каждая доска имеет N Этапов в которых описаваются состояния действий
-
 import { ProtectedRoute } from "@/modules/auth/auth-context";
 import { Boards } from "./boards-async";
+import { getCurrentUser } from "@/lib/auth2";
 
-// Идет запрос который запрашивает данные о досках, если есть отобразить их. если нет предложить создать свою
-export default function Page() {
-  // тут какой то фетч
-  // const response = false;
+export default async function Page() {
+  const user = await getCurrentUser();
 
-  // return <div>{!response ? <Boards /> : "Перейти к доске <ссылка>"}</div>;
   return (
-    <ProtectedRoute>
+    <ProtectedRoute user={user}>
       <Boards />
     </ProtectedRoute>
   );

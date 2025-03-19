@@ -1,15 +1,11 @@
-"use client";
-
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/shared/globals.css";
 import { LinkUI } from "@/components/ui/link";
 // import { AuthContext } from "@/modules/auth/auth-context";
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { routes } from "@/constants/routes";
-import { AuthProvider, useAuth } from "@/modules/auth/auth-context";
-import { getUserById } from "@/modules/auth/auth";
-import { User } from "@prisma/client";
+import { getCurrentUser } from "@/lib/auth2";
+import { Header } from "./header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,21 +17,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const { getMeState, loadMe } = useGetMeApi();
-  // const {
-  //   process: { error, loading },
-  //   user,
-  // } = getMeState;
-
-  // React.useEffect(() => {
-  //   loadMe();
-  // }, [loadMe]);
-
+  const user = await getCurrentUser();
   const render = () => {
     // if (loading) return <FullScreenLoader />;
     // if (error) return "Что-то пошло не по плану";
@@ -46,54 +33,22 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <AuthProvider>
-          <div className="flex flex-col h-screen">
-            <Header />
+        {/* <AuthProvider> */}
+        <div className="flex flex-col h-screen">
+          <Header />
 
-            <div className="flex flex-1 overflow-hidden">
-              <Sidebar />
+          <div className="flex flex-1 overflow-hidden">
+            <Sidebar />
 
-              {/* Main Content */}
-              <main className="flex-1 p-4 overflow-auto">{render()}</main>
-            </div>
+            {/* Main Content */}
+            <main className="flex-1 p-4 overflow-auto">{render()}</main>
           </div>
-        </AuthProvider>
+        </div>
+        {/* </AuthProvider> */}
       </body>
     </html>
   );
 }
-
-const Header = () => {
-  const { user, logout, setUser } = useAuth();
-
-  return (
-    <header className="bg-blue-500 text-white p-4 h-[60px] flex items-center justify-between w-full">
-      <h1 className="text-2xl font-bold">
-        <LinkUI
-          className="text-white-700 hover:text-gray-400"
-          href={routes.home}
-        >
-          Название проекта
-        </LinkUI>
-      </h1>
-      <div>
-        {user?.name}
-
-        {user && (
-          <Button onClick={logout} className="justify-end">
-            Выйти
-          </Button>
-        )}
-
-        {!user && (
-          <LinkUI href={routes.home}>
-            <Button className="justify-end">Войти</Button>
-          </LinkUI>
-        )}
-      </div>
-    </header>
-  );
-};
 
 const Sidebar = () => {
   return (

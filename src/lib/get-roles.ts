@@ -1,7 +1,14 @@
+import { Role } from "@prisma/client";
 import { prisma } from "./prisma";
 
 export const getAllRoles = async () => {
-  const roles = await prisma.role.findMany();
+  return await prisma.role.findMany();
+};
 
-  return roles;
+export const getRoleById = (id: Role["id"]) => {
+  return prisma.role.findUnique({
+    where: {
+      id,
+    },
+  });
 };

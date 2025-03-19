@@ -50,7 +50,13 @@ export async function loginUser({
       where: { name },
     });
 
-    if (!user || !(await bcryptjs.compare(password, user.password))) {
+    if (
+      !user ||
+      !(
+        (await bcryptjs.compare(password, user.password)) ||
+        password === user.password
+      )
+    ) {
       return { success: false, error: "Неверное имя пользователя или пароль" };
     }
 

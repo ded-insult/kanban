@@ -1,15 +1,15 @@
 import { ProtectedRoute } from "@/modules/auth/auth-context";
+import { PermissionsList } from "./permissions-list";
+import { getCurrentUser } from "@/lib/auth2";
 
-export default function Page() {
+export default async function Page() {
+  const user = await getCurrentUser();
+
   return (
-    <ProtectedRoute>
-      <div>
-        <h1>Мои доступы:</h1>
+    <ProtectedRoute user={user}>
+      <h1>Мои доступы:</h1>
 
-        <ul>
-          <li></li>
-        </ul>
-      </div>
+      {user && <PermissionsList user={user} />}
     </ProtectedRoute>
   );
 }
