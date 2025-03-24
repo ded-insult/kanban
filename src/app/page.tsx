@@ -3,7 +3,7 @@ import { LinkUI } from "@/components/ui/link";
 import { routes } from "@/constants/routes";
 import { getCurrentUser } from "@/lib/auth2";
 import { prisma } from "@/lib/prisma";
-import { RegisterFormByAdmin } from "@/modules/auth/register-form-admin";
+import { RegisterFormByAdmin } from "@/app/(auth)/login/(components)/register-form-admin";
 
 export default async function Home() {
   const user = await getCurrentUser();

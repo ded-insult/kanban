@@ -1,14 +1,12 @@
-// lib/auth.ts
 "use server";
 
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import bcryptjs from "bcryptjs";
+import { prisma } from "./prisma";
+import { routes } from "@/constants/routes";
 
-const prisma = new PrismaClient();
-
-// Регистрация нового пользователя
 export async function register(formData: FormData) {
   const name = formData.get("name") as string;
   const password = formData.get("password") as string;
@@ -23,10 +21,8 @@ export async function register(formData: FormData) {
 
   const cookie = await cookies();
   cookie.set("user", JSON.stringify(user));
-  redirect("/dashboard");
 }
 
-// Вход пользователя
 export async function login(formData: FormData) {
   const name = formData.get("name") as string;
   const password = formData.get("password") as string;
@@ -47,22 +43,21 @@ export async function login(formData: FormData) {
 
   const cookie = await cookies();
   cookie.set("user", JSON.stringify(user));
-  redirect("/");
+  redirect(routes.home);
 }
 
-// Выход пользователя
 export async function logout() {
   const kok = await cookies();
   kok.delete("user");
-  redirect("/");
+  redirect(routes.home);
 }
 
-// Получение текущего пользователя
 export async function getCurrentUser(): Promise<User | null> {
   const userCookie = await cookies();
   const final = userCookie.get("user")?.value;
 
   if (final) return JSON.parse(final);
 
+  // if (home) redirect(routes.home);
   return null;
 }

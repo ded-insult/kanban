@@ -13,7 +13,7 @@ export const Header = async () => {
           className="text-white-700 hover:text-gray-400"
           href={routes.home}
         >
-          Название проекта
+          Мониторинг процессов
         </LinkUI>
       </h1>
 

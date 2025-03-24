@@ -1,10 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/shared/globals.css";
 import { LinkUI } from "@/components/ui/link";
-// import { AuthContext } from "@/modules/auth/auth-context";
-import React, { useState } from "react";
+import React from "react";
 import { routes } from "@/constants/routes";
-import { getCurrentUser } from "@/lib/auth2";
 import { Header } from "./header";
 
 const geistSans = Geist({
@@ -22,7 +20,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getCurrentUser();
   const render = () => {
     // if (loading) return <FullScreenLoader />;
     // if (error) return "Что-то пошло не по плану";
