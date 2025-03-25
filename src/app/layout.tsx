@@ -1,6 +1,11 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/shared/globals.css";
-import { LinkUI } from "@/components/ui/link";
+import {
+  BoardIcon,
+  LinkUI,
+  PermissionIcon,
+  SettingsIcon,
+} from "@/components/ui/link";
 import React from "react";
 import { routes } from "@/constants/routes";
 import { Header } from "./header";
@@ -49,16 +54,25 @@ export default async function RootLayout({
 
 const Sidebar = () => {
   return (
-    <aside className="w-[220px] bg-gray-200 p-4 flex-shrink-0">
-      <nav className="flex flex-col space-y-2">
-        <LinkUI theme="dark" href={routes.boards}>
-          Доски
+    <aside className="w-[260px] bg-gray-50 dark:bg-gray-800 p-6 flex-shrink-0 border-r border-gray-200 dark:border-gray-700">
+      <nav className="flex flex-col space-y-3">
+        <LinkUI theme="dark" href={routes.boards} className="group">
+          <span className="flex items-center gap-3">
+            <BoardIcon className="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-colors" />
+            Доски
+          </span>
         </LinkUI>
-        <LinkUI theme="dark" href={routes.permissions}>
-          Мои доступы
+        <LinkUI theme="dark" href={routes.permissions} className="group">
+          <span className="flex items-center gap-3">
+            <PermissionIcon className="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-colors" />
+            Мои доступы
+          </span>
         </LinkUI>
-        <LinkUI theme="dark" href="#">
-          Link 3
+        <LinkUI theme="dark" href="#" className="group">
+          <span className="flex items-center gap-3">
+            <SettingsIcon className="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-colors" />
+            Настройки
+          </span>
         </LinkUI>
       </nav>
     </aside>

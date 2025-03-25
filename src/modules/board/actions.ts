@@ -1,7 +1,6 @@
 "use server";
 
 import { CreateBoardColumn } from "@/domain/board";
-import { prisma } from "@/lib/prisma";
 
 const normalizeStringToBoard = (boards: string[]): CreateBoardColumn[] =>
   boards.reduce((acc, value) => {

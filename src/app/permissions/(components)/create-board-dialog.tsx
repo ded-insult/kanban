@@ -9,17 +9,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Board, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { useState } from "react";
 import { createBoard } from "../(actions)";
 
-export const CreateBoardDialog = ({
-  boards,
-  user,
-}: {
-  boards: Board[];
-  user: User;
-}) => {
+export const CreateBoardDialog = ({ user }: { user: User }) => {
   const [boardTitle, setBoardTitle] = useState("");
 
   const onCreateBoard = async () => {

@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth2";
 
 export default async function Page() {
   const user = await getCurrentUser();
+
   return (
     <ProtectedRoute user={user}>
       <div>
