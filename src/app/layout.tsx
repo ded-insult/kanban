@@ -56,7 +56,7 @@ const Sidebar = () => {
   return (
     <aside className="w-[260px] bg-gray-50 dark:bg-gray-800 p-6 flex-shrink-0 border-r border-gray-200 dark:border-gray-700">
       <nav className="flex flex-col space-y-3">
-        <LinkUI theme="dark" href={routes.boards} className="group">
+        <LinkUI theme="dark" href={routes.boards.initial} className="group">
           <span className="flex items-center gap-3">
             <BoardIcon className="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-colors" />
             Доски
