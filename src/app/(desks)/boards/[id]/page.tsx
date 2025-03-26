@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { LinkUI } from "@/components/ui/link";
+import { routes } from "@/constants/routes";
+import { getCurrentUser } from "@/lib/auth2";
+import { checkAdmin } from "@/lib/check-admin";
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import React from "react";
 
 // TODO: Здесь должен быть набор Этапов в которых описаваются состояния действий
@@ -17,6 +22,11 @@ export default async function Page({
       id: id,
     },
   });
+  const user = await getCurrentUser();
+  if (!user) redirect(routes.home);
+
+  const admin = await checkAdmin(user);
+
   const columns = await prisma.boardColumn.findMany({
     where: {
       boardId: id,
@@ -26,7 +36,17 @@ export default async function Page({
   return (
     <div>
       <h1>{board?.title}</h1>
-      <div className="flex overflow-x-auto gap-4 pt-4">
+
+      {admin && (
+        <LinkUI
+          className="cursor-pointer"
+          href={routes.boards.update.replace(":id", id)}
+        >
+          <button>Обновить доску</button>
+        </LinkUI>
+      )}
+
+      {/* <div className="flex overflow-x-auto gap-4 pt-4">
         {columns.map((column) => (
           <Card.Wrapper key={column.id} className="w-64 flex-shrink-0">
             <Card.Title className="text-align-center">
@@ -37,7 +57,7 @@ export default async function Page({
             </Card.Footer>
           </Card.Wrapper>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

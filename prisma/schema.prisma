@@ -62,6 +62,7 @@ model BoardColumn {
   id       String    @id @default(cuid())
   title    String
   status   String
+  position Int       @default(0) // Новое поле для управления порядком
   boardId  String
   board    Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
   tasks    Task[]    @relation("ColumnTasks")
