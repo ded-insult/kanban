@@ -31,8 +31,7 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
                 </p>
               </div>
               <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full">
-                Участвует в {data!.boards.length + data!.ownedBoards.length}{" "}
-                досках
+                Участвует в досках
               </span>
             </div>
           </div>

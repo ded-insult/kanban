@@ -20,7 +20,7 @@ export default async function Page() {
       {/* TODO: доделать пермишины */}
       <PermissionsList user={user!} />
 
-      {admin && <b>Создать доступ:</b>}
+      {admin && <div className="text-xl mt-4">Создать доступ:</div>}
 
       {admin && (
         <CreatePermissionDialog roles={roles} user={user} boards={boards} />

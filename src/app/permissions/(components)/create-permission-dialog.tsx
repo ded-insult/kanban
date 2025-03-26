@@ -104,18 +104,20 @@ export const CreatePermissionDialog = ({
             />
             <div>
               <LabelUI htmlFor="board" className="text-right">
-                Выбранная доска
+                Выбранная роль
               </LabelUI>
             </div>
 
             <div>
               {roles.map((role) => (
-                <div onClick={() => onChangeRole(role.id)}>{role.name}</div>
+                <div key={role.id} onClick={() => onChangeRole(role.id)}>
+                  {role.name}
+                </div>
               ))}
             </div>
           </div>
 
-          <CreateBoardDialog user={user!} boards={boards} />
+          <CreateBoardDialog user={user!} />
         </div>
 
         <DialogFooter>
