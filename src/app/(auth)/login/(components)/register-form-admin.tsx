@@ -1,21 +1,22 @@
 "use client";
 
-import { Role, RoleType, User } from "@prisma/client";
-import { createRoleByName, createUser } from "../(actions)";
+import { Role, RoleType } from "@prisma/client";
+import { createRoleByName, registerUser } from "../(actions)";
 import { useState } from "react";
 import { CreateRoleDialog } from "./create-role-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
   // Dialog
   const [roleName, setRoleName] = useState<Role["name"]>("");
   const [roleType, setRoleType] = useState<RoleType>();
-
-  // Current
-  const [user, setUser] = useState<Pick<User, "name" | "password" | "roleId">>({
-    name: "",
-    password: "",
-    roleId: "",
-  });
 
   const onCreateRole = async () => {
     try {
@@ -27,22 +28,19 @@ export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
     }
   };
 
-  const onCreateUser = async () => {
-    if (!("name" in user!) || !("password" in user!) || !("roleId" in user!)) {
-      alert("Все поля должны быть заполнены");
-      return;
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
     }
-
     try {
-      await createUser({
-        name: user.name,
-        password: user.password,
-        roleId: user.roleId,
-      });
-      alert("Пользователь успешно создана!");
-      setRoleName("");
-    } catch (error) {
-      alert("Ошибка при создании пользователя");
+      console.log(formData);
+
+      await registerUser(formData);
+    } catch (err) {
+      alert("Произошла ошибка");
+      event.currentTarget.reset();
     }
   };
 
@@ -55,22 +53,40 @@ export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
 
       <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
         <h2>Регистрация пользователя</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block mb-2">
+            <label htmlFor="username" className="block mb-2">
               Имя пользователя
             </label>
             <input
               className="w-full p-2 border rounded"
               type="text"
-              name="name"
+              name="username"
               placeholder="Имя"
               required
-              value={user?.name}
-              onChange={(e) =>
-                setUser((p) => ({ ...p, name: e.target.value } as User))
-              }
             />
+          </div>
+          <div>
+            <label htmlFor="role">Роль</label>
+            <Select name="role" required>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Выбрать роль" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {roles.map((role) => (
+                    <SelectItem
+                      value={role.id}
+                      key={role.id}
+                      className="cursor-pointer"
+                    >
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <br />
           </div>
           <div className="mb-4">
             <label htmlFor="password" className="block mb-2">
@@ -81,29 +97,8 @@ export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
               type="password"
               name="password"
               placeholder="Пароль"
-              value={user?.password}
-              onChange={(e) =>
-                setUser((p) => ({ ...p, password: e.target.value } as User))
-              }
               required
             />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="role" className="block mb-2">
-              Role
-            </label>
-
-            {roles.map((role) => (
-              <li
-                key={role.id}
-                className="cursor-pointer"
-                onClick={() =>
-                  setUser((p) => ({ ...p, roleId: role.id } as User))
-                }
-              >
-                {role.id === user?.roleId ? <b>{role.name}</b> : role.name}
-              </li>
-            ))}
           </div>
 
           <CreateRoleDialog
@@ -117,7 +112,6 @@ export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
           <button
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
-            onClick={onCreateUser}
           >
             Регистрация пользователя
           </button>

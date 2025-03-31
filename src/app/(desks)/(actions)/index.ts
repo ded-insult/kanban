@@ -80,3 +80,79 @@ export const getBoardColumnsById = async (boardId: string) => {
     },
   });
 };
+
+export interface TaskData {
+  title: string;
+  description?: string;
+  columnId: string;
+  sectionId?: string | null;
+  assigneeId?: string;
+  sprintId?: string | null;
+  startDate?: Date | null;
+  endDate?: Date | null;
+  subtasks?: string[];
+  approved?: boolean;
+}
+
+export const createTask = async ({
+  title,
+  description,
+  columnId,
+  sectionId,
+  assigneeId,
+  sprintId,
+  startDate,
+  endDate,
+  subtasks = [],
+  approved = false,
+}: TaskData) => {
+  return await prisma.task.create({
+    data: {
+      title,
+      description,
+      columnId,
+      sectionId,
+      assigneeId,
+      sprintId,
+      startDate,
+      endDate,
+      approved,
+      subtasks: {
+        create: subtasks.map((subtaskTitle) => ({
+          title: subtaskTitle,
+          columnId,
+        })),
+      },
+    },
+  });
+};
+
+export const getUsersByBoardId = async (boardId: string) => {
+  return await prisma.user.findMany({
+    where: {
+      boards: {
+        some: {
+          id: boardId,
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      role: true,
+    },
+  });
+};
+
+export const getTasksWithSubtasks = async (columnId: string) => {
+  return await prisma.task.findMany({
+    where: {
+      columnId,
+    },
+    include: {
+      subtasks: true,
+    },
+  });
+};
+
+export type Zapula = ReturnType<typeof getTasksWithSubtasks>;

@@ -1,14 +1,13 @@
 import { User } from "@prisma/client";
 import {
   getBoarsdWithUsers,
-  getLocalPermissions,
   getUserBoardsWithPermissions,
   getUserWithRolesAndBoards,
 } from "../(actions)";
 import { Card } from "@/components/ui/card";
 
 export const PermissionsList = async ({ user }: { user?: User }) => {
-  const permissions = await getLocalPermissions(user?.id ?? "");
+  // const permissions = await getLocalPermissions(user?.id ?? "");
   const boardList = await getBoarsdWithUsers(user?.id || "");
   const data = await getUserWithRolesAndBoards(user?.id ?? "");
   const userData = await getUserBoardsWithPermissions(user?.id ?? "");
@@ -30,9 +29,16 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
                   <span className="font-medium">{data!.role.name}</span>
                 </p>
               </div>
-              <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full">
-                Участвует в досках
-              </span>
+
+              {data!.boards.length === 0 && data!.ownedBoards.length === 0 ? (
+                <span className="text-xs bg-red-100 dark:bg-blue-900 text-red-800 dark:text-red-200 px-3 py-1 rounded-full">
+                  Не участвует в досках
+                </span>
+              ) : (
+                <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full">
+                  Участвует в досках
+                </span>
+              )}
             </div>
           </div>
 
@@ -86,14 +92,14 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
                               Доступные права:
                             </p>
                             <div className="flex flex-wrap gap-2 mt-2">
-                              {board.permissions.map((permission) => (
+                              {/* {board.permissions.map((permission) => (
                                 <span
                                   key={permission.name}
                                   className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full"
                                 >
                                   {permission.name}
                                 </span>
-                              ))}
+                              ))} */}
                             </div>
                           </div>
                         </div>
@@ -119,7 +125,7 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
                           <div className="mt-3">
                             <p className="text-sm text-gray-500">Ваши права:</p>
                             <div className="flex flex-wrap gap-2 mt-2">
-                              {board.permissions.length > 0 ? (
+                              {/* {board.permissions.length > 0 ? (
                                 board.permissions.map((permission) => (
                                   <span
                                     key={permission.name}
@@ -132,7 +138,7 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
                                 <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
                                   Доступов нет
                                 </span>
-                              )}
+                              )} */}
                             </div>
                           </div>
                         </div>
@@ -147,7 +153,7 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
                     Права вашей роли ({userData!.role.name})
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    {userData!.role.permissions.map((permission) => (
+                    {/* {userData!.role.permissions.map((permission) => (
                       <div
                         key={`${permission.board?.id}-${permission.name}`}
                         className="border rounded-lg p-3 text-sm"
@@ -159,7 +165,7 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
                           </p>
                         )}
                       </div>
-                    ))}
+                    ))} */}
                   </div>
                 </div>
               </div>
@@ -180,7 +186,7 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
         </Card.Content>
       </Card.Wrapper>
 
-      {!permissions?.role.permissions.length && boardList.length > 0 && (
+      {/* {!permissions?.role.permissions.length && boardList.length > 0 && (
         <Card.Wrapper className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
           <Card.Header>
             <Card.Title className="text-xl text-yellow-800 dark:text-yellow-200">
@@ -200,7 +206,7 @@ export const PermissionsList = async ({ user }: { user?: User }) => {
             </ul>
           </Card.Content>
         </Card.Wrapper>
-      )}
+      )} */}
     </div>
   );
 };

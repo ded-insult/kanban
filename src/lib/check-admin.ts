@@ -13,6 +13,6 @@ export const checkAdmin = async (user: User | null) => {
     },
   });
 
-  if (value?.role.roleType === "ADMIN") return true;
+  if (value?.role.role === "ADMIN") return true;
   return false;
 };

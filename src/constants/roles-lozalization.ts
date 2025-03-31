@@ -6,7 +6,6 @@ export const rolesList: RoleType[] = [
   "DEVELOPER",
   "TEAM_LEAD",
   "TESTER",
-  "OTHER",
 ] as const;
 
 export const roleLocalization: Record<RoleType, string> = {
@@ -15,5 +14,4 @@ export const roleLocalization: Record<RoleType, string> = {
   DEVELOPER: "Разработчик",
   TEAM_LEAD: "Руководитель разработки",
   TESTER: "Тестировщик",
-  OTHER: "Другое",
 } as const;

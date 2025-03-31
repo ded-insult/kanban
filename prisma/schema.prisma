@@ -13,25 +13,14 @@ enum RoleType {
   MANAGER
   TESTER
   TEAM_LEAD
-  OTHER
 }
 
 model Role {
-  id          String       @id @default(cuid())
-  name        String       @unique
+  id          String   @id @default(cuid())
+  name        String   @unique
   description String?
-  roleType    RoleType     @default(OTHER)
-  users       User[]       @relation("UserRoles")
-  permissions Permission[] @relation("RolePermissions")
-}
-
-model Permission {
-  id      String @id @default(cuid())
-  name    String @unique
-  roleId  String
-  role    Role   @relation(fields: [roleId], references: [id], name: "RolePermissions", onDelete: Cascade)
-  boardId String
-  board   Board  @relation(fields: [boardId], references: [id], name: "BoardPermissions", onDelete: Cascade)
+  role        RoleType @default(MANAGER)
+  users       User[]   @relation("UserRoles")
 }
 
 model User {
@@ -43,26 +32,25 @@ model User {
   boards      Board[]   @relation("UserBoards")
   ownedBoards Board[]   @relation("OwnedBoards")
   tasks       Task[]
-  Subtask     Subtask[]
+  subtasks    Subtask[]
 }
 
 model Board {
-  id          String        @id @default(cuid())
-  title       String
-  ownerId     String
-  owner       User          @relation(fields: [ownerId], references: [id], name: "OwnedBoards")
-  columns     BoardColumn[]
-  sprints     Sprint[]
-  users       User[]        @relation("UserBoards")
-  Section     Section[]
-  permissions Permission[]  @relation("BoardPermissions")
+  id       String        @id @default(cuid())
+  title    String
+  ownerId  String
+  owner    User          @relation(fields: [ownerId], references: [id], name: "OwnedBoards")
+  columns  BoardColumn[]
+  sprints  Sprint[]
+  users    User[]        @relation("UserBoards")
+  sections Section[]
 }
 
 model BoardColumn {
   id       String    @id @default(cuid())
   title    String
   status   String
-  position Int       @default(0) // Новое поле для управления порядком
+  position Int       @default(0)
   boardId  String
   board    Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
   tasks    Task[]    @relation("ColumnTasks")

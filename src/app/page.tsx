@@ -4,17 +4,11 @@ import { routes } from "@/constants/routes";
 import { getCurrentUser } from "@/lib/auth2";
 import { prisma } from "@/lib/prisma";
 import { RegisterFormByAdmin } from "@/app/(auth)/login/(components)/register-form-admin";
+import { checkAdmin } from "@/lib/check-admin";
 
 export default async function Home() {
   const user = await getCurrentUser();
-  const data = await prisma.user.findUnique({
-    where: {
-      id: user?.id ?? "",
-    },
-    include: {
-      role: true,
-    },
-  });
+  const admin = await checkAdmin(user);
   const roles = await prisma.role.findMany();
 
   return (
@@ -28,7 +22,7 @@ export default async function Home() {
         </LinkUI>
       )}
 
-      {data?.role.roleType === "ADMIN" && <RegisterFormByAdmin roles={roles} />}
+      {admin && <RegisterFormByAdmin roles={roles} />}
     </div>
   );
 }

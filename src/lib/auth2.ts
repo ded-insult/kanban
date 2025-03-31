@@ -1,6 +1,6 @@
 "use server";
 
-import { User } from "@prisma/client";
+import { Role, RoleType, User } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import bcryptjs from "bcryptjs";
@@ -28,7 +28,12 @@ export async function login(formData: FormData) {
   const password = formData.get("password") as string;
 
   const user = await prisma.user.findUnique({
-    where: { name },
+    where: {
+      name,
+    },
+    include: {
+      role: true,
+    },
   });
 
   if (
@@ -52,7 +57,9 @@ export async function logout() {
   redirect(routes.home);
 }
 
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser(): Promise<
+  (User & { role: Role }) | null
+> {
   const userCookie = await cookies();
   const final = userCookie.get("user")?.value;
 

@@ -18,11 +18,6 @@ export default async function Page({
   const board = await getBoardById(id);
   const columns = await getBoardColumnsById(id);
 
-  const columns2 = await prisma.boardColumn.findMany({
-    where: { boardId: id },
-    orderBy: { position: "asc" },
-  });
-
   return (
     <ProtectedRoute user={user}>
       <h1 className="text-xl">

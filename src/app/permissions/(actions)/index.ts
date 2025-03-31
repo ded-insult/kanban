@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { Board, User } from "@prisma/client";
+import { Board, RoleType, User } from "@prisma/client";
 
 export const getBoards = async (ownerId: Board["ownerId"]) => {
   return await prisma.board.findMany({
@@ -10,42 +10,42 @@ export const getBoards = async (ownerId: Board["ownerId"]) => {
   });
 };
 
-export const createBoard = async ({
-  title,
-  ownerId,
-}: {
-  title: Board["title"];
-  ownerId: Board["ownerId"];
-}) => {
+export const createBoard = async (data: { title: string; ownerId: string }) => {
   return await prisma.board.create({
     data: {
-      title,
-      ownerId,
+      title: data.title,
+      ownerId: data.ownerId,
+      columns: {
+        create: [
+          { title: "To Do", status: "TODO", position: 0 },
+          { title: "In Progress", status: "IN_PROGRESS", position: 1 },
+          { title: "Done", status: "DONE", position: 2 },
+        ],
+      },
     },
+    include: { columns: true },
   });
 };
 
-export const createPermission = async ({
-  name,
-  boardId,
-  roleId,
-}: {
-  name: User["name"];
-  boardId: Board["id"];
-  roleId: User["roleId"];
-}) => {
-  return await prisma.permission.create({
-    data: {
-      name,
-      boardId,
-      roleId,
-    },
-  });
-};
+// export const createPermission = async (data: {
+//   action: PermissionAction;
+//   entity: PermissionEntity;
+//   description?: string;
+// }) => {
+//   return await prisma.permission.create({
+//     data: {
+//       action: data.action,
+//       entity: data.entity,
+//       description: data.description,
+//     },
+//   });
+// };
 
-export const getRoles = async () => {
-  return prisma.role.findMany();
-};
+// export const getRoles = async (filter?: { roleType?: RoleType }) => {
+//   return prisma.role.findMany({
+//     where: filter,
+//   });
+// };
 
 export const getBoarsdWithUsers = async (id: User["id"]) => {
   return await prisma.board.findMany({
@@ -62,112 +62,98 @@ export const getBoarsdWithUsers = async (id: User["id"]) => {
   });
 };
 
-export const getUserWithRolesAndBoards = async (id: User["id"]) => {
+export const getUserWithRolesAndBoards = async (userId: string) => {
   return await prisma.user.findUnique({
-    where: {
-      id,
-    },
+    where: { id: userId },
     include: {
       role: true,
-      boards: {
-        select: {
-          id: true,
-          title: true,
-        },
-      },
-      ownedBoards: {
-        select: {
-          id: true,
-          title: true,
-        },
-      },
+      boards: { select: { id: true, title: true } },
+      ownedBoards: { select: { id: true, title: true } },
     },
   });
 };
 
-export const getLocalPermissions = async (id: User["id"]) => {
-  return await prisma.user.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      role: {
-        include: {
-          permissions: true,
-        },
-      },
-    },
-  });
-};
+// export const getUserPermissions = async (userId: string) => {
+//   return await prisma.user.findUnique({
+//     where: { id: userId },
+//     include: {
+//       role: {
+//         include: {
+//           permissions: true,
+//         },
+//       },
+//     },
+//   });
+// };
 
-export const getUserBoardsWithPermissions = async (userId: string) => {
-  return await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    include: {
-      ownedBoards: {
-        select: {
-          id: true,
-          title: true,
-          permissions: {
-            where: {
-              role: {
-                users: {
-                  some: {
-                    id: userId,
-                  },
-                },
-              },
-            },
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      boards: {
-        select: {
-          id: true,
-          title: true,
-          owner: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          permissions: {
-            where: {
-              role: {
-                users: {
-                  some: {
-                    id: userId,
-                  },
-                },
-              },
-            },
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      role: {
-        select: {
-          name: true,
-          permissions: {
-            select: {
-              name: true,
-              board: {
-                select: {
-                  id: true,
-                  title: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-};
+// export const getUserBoardsWithPermissions = async (userId: string) => {
+//   return await prisma.user.findUnique({
+//     where: { id: userId },
+//     include: {
+//       ownedBoards: {
+//         include: {
+//           permissions: {
+//             include: {
+//               roles: {
+//                 where: {
+//                   users: { some: { id: userId } },
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//       boards: {
+//         include: {
+//           owner: { select: { id: true, name: true } },
+//           permissions: {
+//             include: {
+//               roles: {
+//                 where: {
+//                   users: { some: { id: userId } },
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//       role: {
+//         include: {
+//           permissions: {
+//             include: {
+//               boards: { select: { id: true, title: true } },
+//             },
+//           },
+//         },
+//       },
+//     },
+//   });
+// };
+
+// export const assignPermissionToRole = async (data: {
+//   permissionId: string;
+//   roleId: string;
+// }) => {
+//   return await prisma.role.update({
+//     where: { id: data.roleId },
+//     data: {
+//       permissions: {
+//         connect: { id: data.permissionId },
+//       },
+//     },
+//   });
+// };
+
+// export const assignPermissionToBoard = async (data: {
+//   permissionId: string;
+//   boardId: string;
+// }) => {
+//   return await prisma.board.update({
+//     where: { id: data.boardId },
+//     data: {
+//       permissions: {
+//         connect: { id: data.permissionId },
+//       },
+//     },
+//   });
+// };

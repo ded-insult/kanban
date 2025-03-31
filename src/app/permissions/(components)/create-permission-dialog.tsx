@@ -57,11 +57,11 @@ export const CreatePermissionDialog = ({
     }
 
     try {
-      await createPermission({
-        name: formData.name,
-        boardId: formData.boardId,
-        roleId: formData.roleId,
-      });
+      // await createPermission({
+      //   name: formData.name,
+      //   boardId: formData.boardId,
+      //   roleId: formData.roleId,
+      // });
       alert("Успех");
     } catch (e) {
       alert(
