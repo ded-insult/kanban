@@ -11,8 +11,6 @@ import { CreateTaskDialog } from "../../(components)/create-task-dialog";
 import { getUsersByBoardId } from "../../(actions)";
 import { TaskList } from "../../(components)/tasks-list";
 
-// TODO: Здесь должен быть набор Этапов в которых описаваются состояния действий
-
 export default async function Page({
   params,
 }: {

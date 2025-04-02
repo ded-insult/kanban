@@ -34,7 +34,7 @@ export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    let formData = new FormData(event.currentTarget);
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`);
     }
@@ -42,6 +42,7 @@ export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
       console.log(formData);
 
       await registerUser(formData);
+      alert("Успех, вы создали пользователя");
     } catch (err) {
       alert("Произошла ошибка");
       event.currentTarget.reset();
