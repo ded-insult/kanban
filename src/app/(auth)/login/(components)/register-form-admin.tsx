@@ -16,11 +16,15 @@ import {
 export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
   // Dialog
   const [roleName, setRoleName] = useState<Role["name"]>("");
-  const [roleType, setRoleType] = useState<RoleType>();
+  const [roleType, setRoleType] = useState<RoleType>("MANAGER");
 
   const onCreateRole = async () => {
     try {
-      await createRoleByName(roleName);
+      if (!roleName || !roleType) {
+        alert("Заполните все поля");
+        return;
+      }
+      await createRoleByName(roleName, roleType);
       alert("Роль успешно создана!");
       setRoleName("");
     } catch (error) {

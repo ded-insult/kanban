@@ -1,39 +1,11 @@
-// "use client";
-// import { useEffect, useState } from "react";
-// import { getTasksWithSubtasks, Zapula } from "../(actions)";
-// import { Task } from "@prisma/client";
-
 import { getTasksWithSubtasks } from "../(actions)";
-
-type Subtask = {
-  id: string;
-  title: string;
-  completed: boolean;
-};
-
-// type Task = {
-//   id: string;
-//   title: string;
-//   description?: string;
-//   subtasks: Subtask[];
-// };
 
 interface Props {
   columnId: string;
-  // tasks: any;
 }
 
 export const TaskList = async ({ columnId }: Props) => {
-  // const [tasks, setTasks] = useState([]);
   const tasks = await getTasksWithSubtasks(columnId);
-  // useEffect(() => {
-  //   const fetchTasks = async () => {
-  //     const tasksData = await getTasksWithSubtasks(columnId);
-  //     setTasks(tasksData);
-  //   };
-
-  //   fetchTasks();
-  // }, [columnId]);
 
   return (
     <div className="task-list">

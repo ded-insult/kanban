@@ -6,10 +6,11 @@ export const getAllRoles = async () => {
   return await prisma.role.findMany();
 };
 
-export const createRoleByName = async (name: Role["name"]) => {
+export const createRoleByName = async (name: Role["name"], role: RoleType) => {
   return await prisma.role.create({
     data: {
       name,
+      role,
     },
   });
 };
