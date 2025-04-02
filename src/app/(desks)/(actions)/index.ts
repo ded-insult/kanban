@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { Board, BoardColumn } from "@prisma/client";
+import { Board, BoardColumn, Subtask, Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export interface BoardData {
@@ -155,4 +155,81 @@ export const getTasksWithSubtasks = async (columnId: string) => {
   });
 };
 
-export type Zapula = ReturnType<typeof getTasksWithSubtasks>;
+interface UpdateTaskData {
+  id: string;
+  title: string;
+  description?: string;
+  subtasks: Subtask[];
+  assigneeId: Task["assigneeId"];
+}
+
+export const updateTask = async ({
+  id,
+  title,
+  description,
+  subtasks,
+  assigneeId,
+}: UpdateTaskData) => {
+  return await prisma.task.update({
+    where: { id },
+    data: {
+      title,
+      description,
+      assigneeId,
+      subtasks: {
+        updateMany: subtasks.map((subtask) => ({
+          where: { id: subtask.id },
+          data: {
+            title: subtask.title,
+            completed: subtask.completed,
+          },
+        })),
+      },
+    },
+  });
+};
+
+export const updateBoardColumn = async ({
+  id,
+  title,
+  status,
+}: {
+  id: string;
+  title: string;
+  status: string;
+}) => {
+  return await prisma.boardColumn.update({
+    where: { id },
+    data: { title, status },
+  });
+};
+
+export const getTasksWithSubtasks2 = async (columnId: string) => {
+  return await prisma.task.findMany({
+    where: {
+      columnId,
+    },
+    include: {
+      subtasks: true,
+      assignee: {
+        include: {
+          role: true,
+        },
+      },
+    },
+  });
+};
+
+export const updateBoardTitle = async (
+  id: Board["id"],
+  title: Board["title"]
+) => {
+  return await prisma.board.update({
+    data: {
+      title,
+    },
+    where: {
+      id,
+    },
+  });
+};

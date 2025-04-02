@@ -5,10 +5,19 @@ import {
   createBoardColumn,
   deleteBoardColumn,
   moveBoardColumnPosition,
+  updateBoardColumn,
 } from "../(actions)";
 import { BoardColumn } from "@prisma/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type ColumnData = Omit<BoardColumnData, "boardId" | "position">;
 const initialFormData: ColumnData = {
@@ -25,8 +34,29 @@ export const UpdateBoardColumnsForm = ({
 }) => {
   const [formData, setFormData] = useState<ColumnData>(initialFormData);
   const [draggedItem, setDraggedItem] = useState<BoardColumn | null>(null);
+  const [editingColumn, setEditingColumn] = useState<BoardColumn | null>(null);
   const [pending, setPending] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
   const columnsRef = useRef<HTMLDivElement[]>([]);
+
+  const handleUpdateColumn = async () => {
+    if (!editingColumn || !editTitle.trim()) return;
+
+    try {
+      await updateBoardColumn({
+        id: editingColumn.id,
+        title: editTitle,
+        status: editTitle,
+      });
+      alert("Успех");
+      setEditingColumn(null);
+      setEditTitle("");
+    } catch (error) {
+      alert("Ошибка при обновлении столбца");
+      setEditingColumn(null);
+      setEditTitle("");
+    }
+  };
 
   const sortedColumns = [...initialColumns].sort(
     (a, b) => a.position - b.position
@@ -180,6 +210,33 @@ export const UpdateBoardColumnsForm = ({
             }}
           >
             <span>{column.title}</span>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingColumn(column);
+                    setEditTitle(column.title);
+                  }}
+                  disabled={pending}
+                >
+                  Изменить
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Изменить название столбца</DialogTitle>
+                </DialogHeader>
+                <Input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="Новое название"
+                />
+                <DialogFooter>
+                  <Button onClick={handleUpdateColumn}>Сохранить</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Button
               variant="destructive"
               onClick={() => onDelete(column.id)}

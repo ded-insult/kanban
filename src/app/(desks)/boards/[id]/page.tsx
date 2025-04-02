@@ -18,12 +18,8 @@ export default async function Page({
 }) {
   const { id } = await params;
   const board = await prisma.board.findUnique({
-    where: {
-      id: id,
-    },
-    include: {
-      columns: true,
-    },
+    where: { id },
+    include: { columns: true },
   });
   const user = await getCurrentUser();
   if (!user) redirect(routes.home);
@@ -31,35 +27,49 @@ export default async function Page({
   const userList = await getUsersByBoardId(id);
 
   return (
-    <div>
-      <h1>{board?.title}</h1>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-[1800px] mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">{board?.title}</h1>
 
-      {can(user.role.role, "board", "update") && (
-        <LinkUI
-          className="cursor-pointer"
-          href={routes.boards.update.replace(":id", id)}
-        >
-          <Button>Обновить доску</Button>
-        </LinkUI>
-      )}
+          {can(user.role.role, "board", "update") && (
+            <LinkUI
+              className="cursor-pointer"
+              href={routes.boards.update.replace(":id", id)}
+            >
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                Обновить доску
+              </Button>
+            </LinkUI>
+          )}
+        </div>
 
-      <div className="flex gap-4">
-        {board?.columns.map((column) => (
-          <Card.Wrapper key={column.id} className="w-64 p-6 flex-shrink-0">
-            <Card.Title className="text-align-center">
-              <h3>{column.title}</h3>
-            </Card.Title>
+        <div className="flex gap-6 overflow-x-auto pb-6">
+          {board?.columns.map((column) => (
+            <Card.Wrapper
+              key={column.id}
+              className="w-80 bg-gray-100 rounded-xl p-4 flex-shrink-0 flex flex-col"
+            >
+              <Card.Title className="flex items-center justify-between mb-4 px-2">
+                {/* <h3 className="font-semibold text-gray-700">{column.title}</h3> */}
+                <span>Статус: </span>
+                <span className="text-xl text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                  {column.status}
+                </span>
+              </Card.Title>
 
-            <TaskList columnId={column.id} />
+              {can(user.role.role, "task", "create") && (
+                <div className="mb-4">
+                  <CreateTaskDialog userList={userList} columnId={column.id} />
+                </div>
+              )}
 
-            {can(user.role.role, "task", "create") && (
-              <Card.Footer>
-                {/* <Button variant="default">Создать карточку</Button> */}
-                <CreateTaskDialog userList={userList} columnId={column.id} />
-              </Card.Footer>
-            )}
-          </Card.Wrapper>
-        ))}
+              <div className="flex-1 overflow-y-auto">
+                <TaskList userList={userList} columnId={column.id} />
+              </div>
+            </Card.Wrapper>
+          ))}
+        </div>
       </div>
     </div>
   );
