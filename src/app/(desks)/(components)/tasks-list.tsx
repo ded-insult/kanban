@@ -1,6 +1,9 @@
-import { User } from "@prisma/client";
+"use client";
 import { getTasksWithSubtasks2 } from "../(actions)";
 import { EditTaskDialog } from "./edit-task-dialog";
+import { getCurrentUser } from "@/lib/auth2";
+import { priorityLabels, priorityColors } from "@/lib/priority";
+import { useEffect, useState } from "react";
 
 interface Props {
   columnId: string;
@@ -8,21 +11,52 @@ interface Props {
   userList: any[];
 }
 
-export const TaskList = async ({ columnId, userList }: Props) => {
-  const tasks = await getTasksWithSubtasks2(columnId);
+type Xuy = Awaited<ReturnType<typeof getTasksWithSubtasks2>>;
+type Userito = Awaited<ReturnType<typeof getCurrentUser>>;
+
+export const TaskList = ({ columnId, userList }: Props) => {
+  const [tasks, setTasks] = useState<Xuy>([]);
+  const [user, setUser] = useState<Userito>(null);
+
+  const handleDragStart = (e: React.DragEvent, taskId: string) => {
+    e.dataTransfer.setData("text/plain", taskId);
+  };
+
+  useEffect(() => {
+    Promise.all([getTasksWithSubtasks2(columnId), getCurrentUser()]).then(
+      ([tasks, user]) => {
+        setTasks(tasks);
+        setUser(user);
+      }
+    );
+  }, []);
 
   return (
     <div className="task-list space-y-4">
       {tasks.map((task) => (
         <div
           key={task.id}
-          className="task-card bg-white border border-gray-200 shadow-sm rounded-lg p-6 hover:shadow-md transition-shadow"
+          onDragStart={(e) => handleDragStart(e, task.id)}
+          className="task-card bg-white border border-gray-200 shadow-sm rounded-lg p-6 hover:shadow-md transition-shadow cursor-move"
         >
           <div className="flex justify-between items-start mb-4">
-            <h3 className="task-title text-lg font-semibold text-gray-900">
-              {task.title}
-            </h3>
-            <EditTaskDialog task={task} userList={userList} />
+            <div className="flex flex-col gap-2 flex-1 mr-2">
+              <h3 className="task-title text-lg font-semibold text-gray-900 break-words">
+                {task.title}
+              </h3>
+              <span
+                className={`text-xs px-2 py-1 rounded-full w-fit ${
+                  priorityColors[task.priority]
+                }`}
+              >
+                {priorityLabels[task.priority]}
+              </span>
+              <EditTaskDialog
+                userRole={user!.role.role}
+                task={task}
+                userList={userList}
+              />
+            </div>
           </div>
 
           {task.assignee && (
@@ -42,7 +76,7 @@ export const TaskList = async ({ columnId, userList }: Props) => {
           )}
 
           {task.description && (
-            <p className="task-desc text-gray-600 mb-4 text-sm">
+            <p className="task-desc text-gray-600 mb-4 text-sm max-h-[200px] overflow-y-auto pr-2 break-words">
               {task.description}
             </p>
           )}
@@ -58,15 +92,15 @@ export const TaskList = async ({ columnId, userList }: Props) => {
                     key={subtask.id}
                     className="subtask-item flex items-center gap-3 p-2 rounded-md hover:bg-gray-50"
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center w-full">
                       <input
                         type="checkbox"
                         checked={subtask.completed}
                         readOnly
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
                       />
                       <span
-                        className={`ml-3 text-sm ${
+                        className={`ml-3 text-sm break-words ${
                           subtask.completed
                             ? "text-gray-400 line-through"
                             : "text-gray-700"
@@ -83,7 +117,6 @@ export const TaskList = async ({ columnId, userList }: Props) => {
 
           <div className="mt-4 pt-3 border-t border-gray-100">
             <div className="flex items-center justify-between text-xs text-gray-500">
-              {/* <span>Создано: {new Date(task.createdAt).toLocaleDateString()}</span> */}
               {task.endDate && (
                 <span className="flex items-center">
                   <span className="mr-1">Срок:</span>

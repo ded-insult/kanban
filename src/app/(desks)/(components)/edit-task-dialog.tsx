@@ -8,25 +8,33 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Subtask, Task, User } from "@prisma/client";
+import { RoleType, Subtask, Task, TaskPriority, User } from "@prisma/client";
 import { useState } from "react";
-import { updateTask } from "../(actions)";
+import { deleteTask, updateTask } from "../(actions)";
 
 import { getUsersByBoardId } from "../(actions)";
+import { can } from "@/lib/permissions";
+import { priorityLabels, priorityColors } from "@/lib/priority";
 
 interface EditTaskDialogProps {
   task: Task & {
     subtasks: Subtask[];
   };
+  userRole: RoleType;
   userList: User[];
 }
 
-export const EditTaskDialog = ({ task, userList }: EditTaskDialogProps) => {
+export const EditTaskDialog = ({
+  task,
+  userList,
+  userRole,
+}: EditTaskDialogProps) => {
   const [taskData, setTaskData] = useState({
     title: task.title,
     description: task.description || "",
     subtasks: task.subtasks,
     assigneeId: task.assigneeId || "",
+    priority: task.priority || "LOW", // Add priority to state
   });
 
   const handleTaskChange = (
@@ -54,6 +62,18 @@ export const EditTaskDialog = ({ task, userList }: EditTaskDialogProps) => {
     }));
   };
 
+  const handleDelete = async () => {
+    if (confirm("Вы уверены, что хотите удалить задачу?")) {
+      try {
+        await deleteTask(task.id);
+        alert("Задача удалена");
+        window.location.reload(); // Refresh to show updated list
+      } catch (error) {
+        alert("Ошибка при удалении задачи");
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       await updateTask({
@@ -62,6 +82,7 @@ export const EditTaskDialog = ({ task, userList }: EditTaskDialogProps) => {
         description: taskData.description,
         subtasks: taskData.subtasks,
         assigneeId: taskData.assigneeId || null,
+        priority: taskData.priority,
       });
       alert("Задача обновлена");
     } catch (error) {
@@ -76,9 +97,11 @@ export const EditTaskDialog = ({ task, userList }: EditTaskDialogProps) => {
           Редактировать
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[600px] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Редактировать задачу</DialogTitle>
+          <DialogTitle className="flex justify-between items-center">
+            <span>Редактировать задачу</span>
+          </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div>
@@ -144,8 +167,30 @@ export const EditTaskDialog = ({ task, userList }: EditTaskDialogProps) => {
               ))}
             </select>
           </div>
+
+          {/* Add priority selection */}
+          <div>
+            <label className="block mb-2">Приоритет</label>
+            <select
+              name="priority"
+              value={taskData.priority}
+              onChange={handleTaskChange}
+              className="w-full p-2 border rounded"
+            >
+              {Object.entries(priorityLabels).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <DialogFooter>
+          {can(userRole, "task", "delete") && (
+            <Button variant="destructive" onClick={handleDelete}>
+              Удалить
+            </Button>
+          )}
           <Button variant="default" onClick={handleSubmit}>
             Сохранить
           </Button>

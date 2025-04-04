@@ -1,30 +1,58 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { LinkUI } from "@/components/ui/link";
 import { routes } from "@/constants/routes";
 import { getCurrentUser } from "@/lib/auth2";
 import { can } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import React from "react";
-import { CreateTaskDialog } from "../../(components)/create-task-dialog";
-import { getUsersByBoardId } from "../../(actions)";
-import { TaskList } from "../../(components)/tasks-list";
+import React, { useEffect, useState } from "react";
+import { getUsersByBoardId, moveTaskToColumn, xuyna } from "../../(actions)";
+import { BoardList } from "./board-list";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const board = await prisma.board.findUnique({
-    where: { id },
-    include: { columns: true },
-  });
-  const user = await getCurrentUser();
-  if (!user) redirect(routes.home);
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params);
+  const [board, setBoard] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const [userList, setUserList] = useState<any>([]);
 
-  const userList = await getUsersByBoardId(id);
+  useEffect(() => {
+    const fetchData = async () => {
+      const boardData = await xuyna(resolvedParams.id);
+      const userData = await getCurrentUser();
+      const users = await getUsersByBoardId(resolvedParams.id);
+
+      setBoard(boardData);
+      setUser(userData);
+      setUserList(users);
+    };
+    fetchData();
+  }, [resolvedParams.id]);
+
+  const handleDrop = async (e: React.DragEvent, columnId: string) => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (taskId) {
+      try {
+        await moveTaskToColumn(taskId, columnId);
+        // Refresh the board data
+        const updatedBoard = await prisma.board.findUnique({
+          where: { id: resolvedParams.id },
+          include: {
+            columns: {
+              orderBy: {
+                position: "asc",
+              },
+            },
+          },
+        });
+        setBoard(updatedBoard);
+      } catch (error) {
+        console.error("Error moving task:", error);
+      }
+    }
+  };
+
+  if (!board || !user) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -35,7 +63,7 @@ export default async function Page({
           {can(user.role.role, "board", "update") && (
             <LinkUI
               className="cursor-pointer"
-              href={routes.boards.update.replace(":id", id)}
+              href={routes.boards.update.replace(":id", resolvedParams.id)}
             >
               <Button className="bg-blue-600 hover:bg-blue-700">
                 Обновить доску
@@ -45,30 +73,7 @@ export default async function Page({
         </div>
 
         <div className="flex gap-6 overflow-x-auto pb-6">
-          {board?.columns.map((column) => (
-            <Card.Wrapper
-              key={column.id}
-              className="w-80 bg-gray-100 rounded-xl p-4 flex-shrink-0 flex flex-col"
-            >
-              <Card.Title className="flex items-center justify-between mb-4 px-2">
-                {/* <h3 className="font-semibold text-gray-700">{column.title}</h3> */}
-                <span>Статус: </span>
-                <span className="text-xl text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
-                  {column.status}
-                </span>
-              </Card.Title>
-
-              {can(user.role.role, "task", "create") && (
-                <div className="mb-4">
-                  <CreateTaskDialog userList={userList} columnId={column.id} />
-                </div>
-              )}
-
-              <div className="flex-1 overflow-y-auto">
-                <TaskList userList={userList} columnId={column.id} />
-              </div>
-            </Card.Wrapper>
-          ))}
+          <BoardList user={user} userList={userList} board={board} />
         </div>
       </div>
     </div>

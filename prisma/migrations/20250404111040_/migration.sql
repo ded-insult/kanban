@@ -3,24 +3,7 @@ CREATE TABLE "Role" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "roleType" TEXT NOT NULL DEFAULT 'OTHER'
-);
-
--- CreateTable
-CREATE TABLE "Permission" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "action" TEXT NOT NULL,
-    "entity" TEXT NOT NULL,
-    "description" TEXT
-);
-
--- CreateTable
-CREATE TABLE "User" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "roleId" TEXT NOT NULL,
-    CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "role" TEXT NOT NULL DEFAULT 'MANAGER'
 );
 
 -- CreateTable
@@ -54,6 +37,8 @@ CREATE TABLE "Task" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "title" TEXT NOT NULL,
     "description" TEXT,
+    "priority" TEXT NOT NULL DEFAULT 'LOW',
+    "creatorId" TEXT NOT NULL,
     "columnId" TEXT NOT NULL,
     "sectionId" TEXT,
     "assigneeId" TEXT,
@@ -61,10 +46,20 @@ CREATE TABLE "Task" (
     "startDate" DATETIME,
     "endDate" DATETIME,
     "approved" BOOLEAN NOT NULL DEFAULT false,
+    CONSTRAINT "Task_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Task_columnId_fkey" FOREIGN KEY ("columnId") REFERENCES "BoardColumn" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "Task_sectionId_fkey" FOREIGN KEY ("sectionId") REFERENCES "Section" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Task_assigneeId_fkey" FOREIGN KEY ("assigneeId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Task_sprintId_fkey" FOREIGN KEY ("sprintId") REFERENCES "Sprint" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "roleId" TEXT NOT NULL,
+    CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -92,14 +87,6 @@ CREATE TABLE "Sprint" (
 );
 
 -- CreateTable
-CREATE TABLE "_RolePermissions" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
-    CONSTRAINT "_RolePermissions_A_fkey" FOREIGN KEY ("A") REFERENCES "Permission" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "_RolePermissions_B_fkey" FOREIGN KEY ("B") REFERENCES "Role" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
 CREATE TABLE "_UserBoards" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -107,37 +94,14 @@ CREATE TABLE "_UserBoards" (
     CONSTRAINT "_UserBoards_B_fkey" FOREIGN KEY ("B") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- CreateTable
-CREATE TABLE "_BoardPermissions" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
-    CONSTRAINT "_BoardPermissions_A_fkey" FOREIGN KEY ("A") REFERENCES "Board" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "_BoardPermissions_B_fkey" FOREIGN KEY ("B") REFERENCES "Permission" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Role_name_key" ON "Role"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Permission_action_entity_key" ON "Permission"("action", "entity");
-
--- CreateIndex
 CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_RolePermissions_AB_unique" ON "_RolePermissions"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_RolePermissions_B_index" ON "_RolePermissions"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_UserBoards_AB_unique" ON "_UserBoards"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_UserBoards_B_index" ON "_UserBoards"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_BoardPermissions_AB_unique" ON "_BoardPermissions"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_BoardPermissions_B_index" ON "_BoardPermissions"("B");

@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { createTask, TaskData } from "../(actions)";
-import { Role, RoleType } from "@prisma/client";
+import { Role, RoleType, Subtask, Task } from "@prisma/client";
+import { AddBoardUsersDialog } from "./add-board-users-dialog";
+import { can } from "@/lib/permissions";
+import { priorityLabels } from "@/lib/priority";
 
 type User = {
   id: string;
@@ -20,37 +23,48 @@ type User = {
 
 interface Props {
   columnId: string;
+  userRole: string;
+  userId: string;
+  boardId: string;
   userList: User[];
 }
 
-const initialFormData: TaskData = {
+// const initialFormData: TaskData = {
+export type NewTask = Omit<Task, "id"> & { subtasks: string[] };
+const initialFormData: NewTask = {
   columnId: "",
-  assigneeId: "",
+  creatorId: "",
   title: "",
   description: "",
   sectionId: null,
   startDate: null,
   endDate: null,
   sprintId: null,
+  assigneeId: "",
   subtasks: [],
   approved: false,
+  priority: "LOW",
 };
 
 const formatDate = (date: Date | null): string => {
   return date ? date.toISOString().split("T")[0] : "";
 };
 
-export const CreateTaskDialog = ({ columnId, userList }: Props) => {
-  const [formData, setFormData] = useState<TaskData>({
+export const CreateTaskDialog = ({
+  columnId,
+  userList,
+  boardId,
+  userRole,
+  userId,
+}: Props) => {
+  const [formData, setFormData] = useState<NewTask>({
     ...initialFormData,
     columnId,
+    creatorId: userId,
   });
   const [newSubtask, setNewSubtask] = useState("");
 
-  const handleCreateCard = async () => {
-    console.log("Creating card:", formData);
-    // Add logic to save the task using Prisma or another method
-  };
+  // console.log(formData);
 
   const addSubtask = () => {
     if (newSubtask) {
@@ -77,10 +91,25 @@ export const CreateTaskDialog = ({ columnId, userList }: Props) => {
   };
 
   const onSubmit = async () => {
+    if (!formData.title || !formData.assigneeId || !formData.creatorId) {
+      alert("Введите название карточки");
+      return;
+    }
     try {
       await createTask(formData);
       alert("Успешно");
-      setFormData(initialFormData);
+      setFormData(() => {
+        const newData = {
+          ...initialFormData,
+          columnId,
+          creatorId: userId,
+          priority: "LOW",
+        } as NewTask;
+
+        return {
+          ...newData,
+        };
+      });
     } catch (e) {
       alert("Ошибка");
     }
@@ -88,7 +117,6 @@ export const CreateTaskDialog = ({ columnId, userList }: Props) => {
 
   return (
     <Dialog>
-      {/* {JSON.stringify(userList)} */}
       <DialogTrigger asChild>
         <Button variant="default">Создать карточку</Button>
       </DialogTrigger>
@@ -109,10 +137,28 @@ export const CreateTaskDialog = ({ columnId, userList }: Props) => {
           <textarea
             name="description"
             placeholder="Описание карточки"
-            value={formData.description}
+            value={formData.description!}
             onChange={handleChange}
             className="border p-2 rounded"
           />
+
+          {/* Add priority selection */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">Приоритет</label>
+            <select
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              className="border p-2 rounded w-full"
+            >
+              {Object.entries(priorityLabels).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* <input
               type="text"
               name="sectionId"
@@ -121,6 +167,7 @@ export const CreateTaskDialog = ({ columnId, userList }: Props) => {
               onChange={handleChange}
               className="border p-2 rounded"
             /> */}
+          <label className="block mb-2 text-sm font-medium">Дата начала</label>
           <input
             type="date"
             name="startDate"
@@ -129,6 +176,7 @@ export const CreateTaskDialog = ({ columnId, userList }: Props) => {
             onChange={handleChange}
             className="border p-2 rounded"
           />
+          <label className="block mb-2 text-sm font-medium">Дата конца</label>
           <input
             type="date"
             name="endDate"
@@ -146,6 +194,8 @@ export const CreateTaskDialog = ({ columnId, userList }: Props) => {
               className="border p-2 rounded"
             /> */}
           <div>
+            <label className="block mb-2 text-sm font-medium">Подзадачи</label>
+
             <input
               type="text"
               placeholder="Добавить подзадачу"
@@ -164,19 +214,35 @@ export const CreateTaskDialog = ({ columnId, userList }: Props) => {
           </div>
         </div>
 
-        <select
-          name="assigneeId"
-          value={formData.assigneeId || ""}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        >
-          <option value="">Выберите исполнителя</option>
-          {userList.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.name} ({user.role.name})
-            </option>
-          ))}
-        </select>
+        {userList.length > 0 && (
+          <>
+            <label className="block mb-2 text-sm font-medium">
+              Исполнитель
+            </label>
+
+            <select
+              name="assigneeId"
+              value={formData.assigneeId || ""}
+              onChange={handleChange}
+              className="border p-2 rounded"
+            >
+              <option value="">Выберите исполнителя</option>
+              {userList.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.role.name})
+                </option>
+              ))}
+            </select>
+          </>
+        )}
+        <div className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-md">
+          {userList.length === 0 && (
+            <p className="text-sm text-gray-600">Нет доступных исполнителей</p>
+          )}
+          {can(userRole as RoleType, "board", "update") && (
+            <AddBoardUsersDialog boardId={boardId} />
+          )}
+        </div>
 
         <DialogFooter>
           <div>

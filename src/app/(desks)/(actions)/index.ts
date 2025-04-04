@@ -1,7 +1,14 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { Board, BoardColumn, Subtask, Task } from "@prisma/client";
+import {
+  Board,
+  BoardColumn,
+  Subtask,
+  Task,
+  TaskPriority,
+} from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { NewTask } from "../(components)/create-task-dialog";
 
 export interface BoardData {
   title: Board["title"];
@@ -83,6 +90,7 @@ export const getBoardColumnsById = async (boardId: string) => {
 
 export interface TaskData {
   title: string;
+  creatorId: string;
   description?: string;
   columnId: string;
   sectionId?: string | null;
@@ -92,6 +100,7 @@ export interface TaskData {
   endDate?: Date | null;
   subtasks?: string[];
   approved?: boolean;
+  priority: TaskPriority;
 }
 
 export const createTask = async ({
@@ -104,10 +113,13 @@ export const createTask = async ({
   startDate,
   endDate,
   subtasks = [],
+  creatorId,
+  priority,
   approved = false,
-}: TaskData) => {
+}: NewTask) => {
   return await prisma.task.create({
     data: {
+      creatorId,
       title,
       description,
       columnId,
@@ -116,6 +128,7 @@ export const createTask = async ({
       sprintId,
       startDate,
       endDate,
+      priority,
       approved,
       subtasks: {
         create: subtasks.map((subtaskTitle) => ({
@@ -159,6 +172,7 @@ interface UpdateTaskData {
   id: string;
   title: string;
   description?: string;
+  priority: TaskPriority;
   subtasks: Subtask[];
   assigneeId: Task["assigneeId"];
 }
@@ -167,6 +181,7 @@ export const updateTask = async ({
   id,
   title,
   description,
+  priority,
   subtasks,
   assigneeId,
 }: UpdateTaskData) => {
@@ -176,6 +191,7 @@ export const updateTask = async ({
       title,
       description,
       assigneeId,
+      priority,
       subtasks: {
         updateMany: subtasks.map((subtask) => ({
           where: { id: subtask.id },
@@ -233,3 +249,49 @@ export const updateBoardTitle = async (
     },
   });
 };
+
+export const getAllUsers = async () => {
+  return await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      role: true,
+    },
+  });
+};
+
+export const addUserToBoard = async (boardId: string, userId: string) => {
+  return await prisma.board.update({
+    where: { id: boardId },
+    data: {
+      users: {
+        connect: { id: userId },
+      },
+    },
+  });
+};
+
+export const deleteTask = async (id: string) => {
+  return await prisma.task.delete({
+    where: { id },
+  });
+};
+
+export const moveTaskToColumn = async (taskId: string, newColumnId: string) => {
+  return await prisma.task.update({
+    where: { id: taskId },
+    data: { columnId: newColumnId },
+  });
+};
+
+export const xuyna = async (id: string) =>
+  await prisma.board.findUnique({
+    where: { id },
+    include: {
+      columns: {
+        orderBy: {
+          position: "asc",
+        },
+      },
+    },
+  });
