@@ -3,41 +3,53 @@ import { getTasksWithSubtasks2 } from "../(actions)";
 import { EditTaskDialog } from "./edit-task-dialog";
 import { getCurrentUser } from "@/lib/auth2";
 import { priorityLabels, priorityColors } from "@/lib/priority";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { TaskCreator } from "./task-creator";
 
 interface Props {
   columnId: string;
-  // TODO: исправить хуйню
   userList: any[];
+  refreshData?: string;
+  onDragStart: (e: React.DragEvent<HTMLDivElement>, taskId: string) => void;
+  onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
+  isPending: boolean;
 }
 
-type Xuy = Awaited<ReturnType<typeof getTasksWithSubtasks2>>;
+type Tasks = Awaited<ReturnType<typeof getTasksWithSubtasks2>>;
 type Userito = Awaited<ReturnType<typeof getCurrentUser>>;
 
-export const TaskList = ({ columnId, userList }: Props) => {
-  const [tasks, setTasks] = useState<Xuy>([]);
+export const TaskList = ({
+  columnId,
+  userList,
+  onDragStart,
+  onDragEnd,
+  isPending,
+  refreshData,
+}: Props) => {
+  const [tasks, setTasks] = useState<Tasks>([]);
   const [user, setUser] = useState<Userito>(null);
-
-  const handleDragStart = (e: React.DragEvent, taskId: string) => {
-    e.dataTransfer.setData("text/plain", taskId);
-  };
+  const refres = useRef(refreshData || "");
 
   useEffect(() => {
-    Promise.all([getTasksWithSubtasks2(columnId), getCurrentUser()]).then(
-      ([tasks, user]) => {
-        setTasks(tasks);
-        setUser(user);
-      }
-    );
-  }, []);
+    const fetchData = async () => {
+      const tasksData = await getTasksWithSubtasks2(columnId);
+      const userData = await getCurrentUser();
+      setTasks(tasksData);
+      setUser(userData);
+    };
+    fetchData();
+  }, [columnId, isPending, refres.current]); // Refresh when columnId changes or after drag operation
 
   return (
     <div className="task-list space-y-4">
       {tasks.map((task) => (
         <div
           key={task.id}
-          onDragStart={(e) => handleDragStart(e, task.id)}
-          className="task-card bg-white border border-gray-200 shadow-sm rounded-lg p-6 hover:shadow-md transition-shadow cursor-move"
+          draggable={!isPending}
+          onDragStart={(e) => onDragStart(e, task.id)}
+          onDragEnd={onDragEnd}
+          className={`task-card bg-white border border-gray-200 shadow-sm rounded-lg p-6 hover:shadow-md transition-shadow cursor-move
+          `}
         >
           <div className="flex justify-between items-start mb-4">
             <div className="flex flex-col gap-2 flex-1 mr-2">
@@ -58,7 +70,7 @@ export const TaskList = ({ columnId, userList }: Props) => {
               />
             </div>
           </div>
-
+          Исполнитель:
           {task.assignee && (
             <div className="flex items-center gap-2 mb-3 bg-gray-50 rounded-md p-2">
               <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -66,21 +78,26 @@ export const TaskList = ({ columnId, userList }: Props) => {
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-gray-700">
-                  {task.assignee.name}
+                  Имя:{task.assignee.name}
+                  {task.assignee?.id === user?.id && (
+                    <span className="text-xs text-gray-500">(Вы)</span>
+                  )}
                 </span>
                 <span className="text-xs text-gray-500">
-                  {task.assignee.role.name}
+                  Роль:{task.assignee.role.name}
                 </span>
               </div>
+              <br />
             </div>
           )}
-
+          <TaskCreator creatorId={task.creatorId} />
           {task.description && (
             <p className="task-desc text-gray-600 mb-4 text-sm max-h-[200px] overflow-y-auto pr-2 break-words">
+              Описание:
+              <br />
               {task.description}
             </p>
           )}
-
           {task.subtasks.length > 0 && (
             <div className="mt-4">
               <h4 className="text-sm font-medium text-gray-700 mb-2">
@@ -114,7 +131,6 @@ export const TaskList = ({ columnId, userList }: Props) => {
               </ul>
             </div>
           )}
-
           <div className="mt-4 pt-3 border-t border-gray-100">
             <div className="flex items-center justify-between text-xs text-gray-500">
               {task.endDate && (

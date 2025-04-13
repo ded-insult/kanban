@@ -7,7 +7,6 @@ import {
   Task,
   TaskPriority,
 } from "@prisma/client";
-import { revalidatePath } from "next/cache";
 import { NewTask } from "../(components)/create-task-dialog";
 
 export interface BoardData {
@@ -278,13 +277,13 @@ export const deleteTask = async (id: string) => {
 };
 
 export const moveTaskToColumn = async (taskId: string, newColumnId: string) => {
-  return await prisma.task.update({
+  await prisma.task.update({
     where: { id: taskId },
     data: { columnId: newColumnId },
   });
 };
 
-export const xuyna = async (id: string) =>
+export const NEED_TO_RENAME_FN = async (id: string) =>
   await prisma.board.findUnique({
     where: { id },
     include: {
@@ -295,3 +294,14 @@ export const xuyna = async (id: string) =>
       },
     },
   });
+
+export const getTaskCreator = async (creatorId: string) => {
+  return await prisma.user.findUnique({
+    where: { id: creatorId },
+    select: {
+      id: true,
+      name: true,
+      role: true,
+    },
+  });
+};

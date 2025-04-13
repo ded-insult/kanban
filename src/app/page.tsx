@@ -13,8 +13,8 @@ export default async function Home() {
 
   return (
     <div>
-      {user && <h1>ДОброй пожаловать, {user.name}!</h1>}
-      {!user && <h1>ДОброй пожаловать, войдите в аккаунт</h1>}
+      {user && <h1>Добро пожаловать, {user.name}!</h1>}
+      {!user && <h1>Добро пожаловать, войдите в аккаунт</h1>}
 
       {!user && (
         <LinkUI href={routes.login}>
