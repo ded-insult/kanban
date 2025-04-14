@@ -10,7 +10,8 @@ export const Header = async () => {
     <header className="bg-blue-500 text-white p-4 h-[60px] flex items-center justify-between w-full">
       <h1 className="text-2xl font-bold">
         <LinkUI
-          className="text-white-700 hover:text-gray-400"
+          theme="light"
+          // className="text-white-900 hover:text-gray-400"
           href={routes.home}
         >
           Мониторинг процессов

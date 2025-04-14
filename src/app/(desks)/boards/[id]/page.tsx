@@ -34,15 +34,26 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   return (
     <>
       <Tabs defaultValue="sprint">
-        <TabsList>
-          <TabsTrigger value="sprint">Спринты</TabsTrigger>
-          <TabsTrigger value="desk">Доска</TabsTrigger>
+        <TabsList className="flex gap-8 bg-transparent">
+          <TabsTrigger
+            className="text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
+            value="sprint"
+          >
+            Спринты
+          </TabsTrigger>
+          <TabsTrigger
+            className="text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
+            value="desk"
+          >
+            Доска
+          </TabsTrigger>
         </TabsList>
+
         <TabsContent value="sprint">
           <SprintSection />
         </TabsContent>
         <TabsContent value="desk">
-          <div className="min-h-screen bg-gray-50 p-6">
+          <div className="min-h-screen bg-gray-50 p-6 relative">
             <div className="max-w-[1800px] mx-auto">
               <div className="flex justify-between items-center mb-8">
                 <h1 className="text-2xl font-bold text-gray-900">

@@ -80,8 +80,8 @@ model Task {
   priority    TaskPriority @default(LOW)
   creatorId   String
   creator     User         @relation("CreatedTasks", fields: [creatorId], references: [id])
-  columnId    String
-  column      BoardColumn  @relation(fields: [columnId], references: [id], name: "ColumnTasks", onDelete: Cascade)
+  columnId    String?      // Made optional
+  column      BoardColumn? @relation(fields: [columnId], references: [id], name: "ColumnTasks", onDelete: Cascade)
   sectionId   String?
   section     Section?     @relation(fields: [sectionId], references: [id], name: "SectionTasks", onDelete: SetNull)
   assigneeId  String?
@@ -121,12 +121,20 @@ model Subtask {
   column       BoardColumn @relation(fields: [columnId], references: [id], name: "ColumnSubtasks", onDelete: Cascade)
 }
 
+// Add this enum before the Sprint model
+enum SprintStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
 model Sprint {
-  id        String   @id @default(cuid())
+  id        String       @id @default(cuid())
   title     String
+  status    SprintStatus @default(NOT_STARTED)
   boardId   String
-  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  backlog   Task[]   @relation("SprintTasks")
+  board     Board        @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  backlog   Task[]       @relation("SprintTasks")
   startDate DateTime
   endDate   DateTime
 }

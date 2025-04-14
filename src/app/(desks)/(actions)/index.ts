@@ -132,7 +132,7 @@ export const createTask = async ({
       subtasks: {
         create: subtasks.map((subtaskTitle) => ({
           title: subtaskTitle,
-          columnId,
+          columnId: columnId || "",
         })),
       },
     },

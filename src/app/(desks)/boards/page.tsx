@@ -14,15 +14,19 @@ export default async function Page() {
   const admin = await checkAdmin(user);
   return (
     <ProtectedRoute user={user}>
-      {admin && (
-        <Button>
-          <LinkUI theme="light" href={routes.boards.create}>
-            Создать доску
-          </LinkUI>
-        </Button>
-      )}
-
-      <BoardsList />
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Проектные доски</h1>
+          {admin && (
+            <Button className="bg-blue-600 hover:bg-blue-700 transition-colors">
+              <LinkUI theme="light" href={routes.boards.create}>
+                Создать доску
+              </LinkUI>
+            </Button>
+          )}
+        </div>
+        <BoardsList />
+      </div>
     </ProtectedRoute>
   );
 }
