@@ -3,8 +3,8 @@ import { getCurrentUser } from "@/lib/auth2";
 import { routes } from "@/constants/routes";
 import { redirect } from "next/navigation";
 import { getBoardById, getBoardColumnsById } from "@/app/(desks)/(actions)";
-import { UpdateBoardColumnsForm } from "@/app/(desks)/(components)/update-board-columns-form";
-import { UpdateBoardTitleDialog } from "@/app/(desks)/(components)/update-board-title-dialog";
+import { UpdateBoardColumnsForm } from "@/app/(desks)/boards/[id]/update/(components)/update-board-columns-form";
+import { UpdateBoardTitleDialog } from "@/app/(desks)/boards/[id]/update/(components)/update-board-title-dialog";
 
 export default async function Page({
   params,

@@ -2,18 +2,6 @@
 import { prisma } from "@/lib/prisma";
 import { Board, Sprint, Task, TaskPriority } from "@prisma/client";
 
-export const getSprint = async (boardId: Board["id"]) =>
-  await prisma.sprint.findMany({
-    where: { boardId },
-    include: {
-      backlog: {
-        include: {
-          assignee: true,
-        },
-      },
-    },
-  });
-
 interface Test {
   title: Sprint["title"];
   description: Task["description"];
@@ -42,12 +30,6 @@ export const createSprintTask = async (data: Test) => {
   });
 };
 
-export const deleteSprintTask = async (taskId: Task["id"]) => {
-  await prisma.task.delete({
-    where: { id: taskId },
-  });
-};
-
 export const createSprint = async (data: {
   title: Sprint["title"];
   boardId: Sprint["boardId"];
@@ -57,49 +39,6 @@ export const createSprint = async (data: {
   return await prisma.sprint.create({
     data,
   });
-};
-
-export const startSprint = async (
-  sprintId: Sprint["id"],
-  boardId: Board["id"]
-) => {
-  try {
-    // Get the first column of the board
-    const firstColumn = await prisma.boardColumn.findFirst({
-      where: { boardId },
-      orderBy: { position: "asc" },
-    });
-
-    if (!firstColumn) {
-      throw new Error("Нет колонок на доске");
-    }
-
-    // Get all tasks from the sprint
-    const sprintTasks = await prisma.task.findMany({
-      where: { sprintId },
-    });
-
-    // Update all tasks to move them to the first column
-    await Promise.all(
-      sprintTasks.map((task) =>
-        prisma.task.update({
-          where: { id: task.id },
-          data: { columnId: firstColumn.id },
-        })
-      )
-    );
-
-    // Update sprint status
-    await prisma.sprint.update({
-      where: { id: sprintId },
-      data: { status: "IN_PROGRESS" },
-    });
-
-    return { success: true };
-  } catch (error) {
-    console.error("Error starting sprint:", error);
-    throw error;
-  }
 };
 
 export const endSprint = async (boardId: Board["id"]) => {
@@ -148,21 +87,4 @@ export const getCurrentSprint = async (boardId: Board["id"]) => {
       status: "IN_PROGRESS",
     },
   });
-};
-
-export const deleteSprint = async (sprintId: Sprint["id"]) => {
-  try {
-    await prisma.task.deleteMany({
-      where: { sprintId },
-    });
-
-    await prisma.sprint.delete({
-      where: { id: sprintId },
-    });
-
-    return { success: true };
-  } catch (error) {
-    console.error("Error deleting sprint:", error);
-    throw error;
-  }
 };

@@ -1,5 +1,5 @@
 import { ProtectedRoute } from "@/modules/auth/auth-context";
-import { BoardsList } from "../(components)/boards-list";
+import { BoardsList } from "./(components)/boards-list";
 import { getCurrentUser } from "@/lib/auth2";
 import { Button } from "@/components/ui/button";
 import { LinkUI } from "@/components/ui/link";

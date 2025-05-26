@@ -8,14 +8,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
-import { createTask } from "../(actions)";
-import { Role, RoleType, Task, TaskPriority, User } from "@prisma/client";
-import { AddBoardUsersDialog } from "./add-board-users-dialog";
-import { can } from "@/lib/permissions";
+import { useState } from "react";
+import { Task, TaskPriority } from "@prisma/client";
 import { priorityLabels } from "@/lib/priority";
-import { getCurrentUser } from "@/lib/auth2";
-import { createSprintTask } from "../(actions)/sprint-actions";
+import { createSprintTask } from "../../../(actions)/sprint-actions";
 
 interface Props {
   userRole: string;
@@ -57,7 +53,7 @@ const formatDate = (date: Date | null): string => {
   return date ? date.toISOString().split("T")[0] : "";
 };
 
-export const SprintTaskCreate = ({
+export const SprintTaskCreateDialog = ({
   onTaskCreated,
   sprintId,
   userId,
@@ -118,7 +114,7 @@ export const SprintTaskCreate = ({
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger className="cursor-pointer">
         {/* {userRole} */}
         <span>Создать карточку</span>
       </DialogTrigger>

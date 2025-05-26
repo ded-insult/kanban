@@ -1,10 +1,9 @@
 "use client";
 import { getTasksWithSubtasks2 } from "../(actions)";
-import { EditTaskDialog } from "./edit-task-dialog";
+import { EditTaskDialog } from "../../../(components)/edit-task-dialog";
 import { getCurrentUser } from "@/lib/auth2";
 import { priorityLabels, priorityColors } from "@/lib/priority";
 import { useEffect, useRef, useState } from "react";
-import { TaskCreator } from "./task-creator";
 
 interface Props {
   columnId: string;
@@ -90,7 +89,11 @@ export const TaskList = ({
               <br />
             </div>
           )}
-          <TaskCreator creatorId={task.creatorId} />
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500">
+              Создатель: {task.creator.name}
+            </span>
+          </div>
           {task.description && (
             <p className="task-desc text-gray-600 mb-4 text-sm max-h-[200px] overflow-y-auto pr-2 break-words">
               Описание:

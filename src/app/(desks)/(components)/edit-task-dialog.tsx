@@ -8,13 +8,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { RoleType, Subtask, Task, TaskPriority, User } from "@prisma/client";
+import { RoleType, Subtask, Task, User } from "@prisma/client";
 import { useState } from "react";
 import { deleteTask, updateTask } from "../(actions)";
 
-import { getUsersByBoardId } from "../(actions)";
 import { can } from "@/lib/permissions";
-import { priorityLabels, priorityColors } from "@/lib/priority";
+import { priorityLabels } from "@/lib/priority";
 
 interface EditTaskDialogProps {
   task: Task & {

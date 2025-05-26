@@ -18,7 +18,10 @@ interface UpdateBoardTitleDialogProps {
   currentTitle: string;
 }
 
-export const UpdateBoardTitleDialog = ({ boardId, currentTitle }: UpdateBoardTitleDialogProps) => {
+export const UpdateBoardTitleDialog = ({
+  boardId,
+  currentTitle,
+}: UpdateBoardTitleDialogProps) => {
   const [title, setTitle] = useState(currentTitle);
 
   const handleSubmit = async () => {

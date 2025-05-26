@@ -1,17 +1,10 @@
 "use client";
 import { Card } from "@/components/ui/card";
 import { can } from "@/lib/permissions";
-import {
-  Board,
-  BoardColumn,
-  RoleType,
-  Sprint,
-  Task,
-  User,
-} from "@prisma/client";
-import { TaskList } from "../../(components)/tasks-list";
-import { CreateTaskDialog } from "../../(components)/create-task-dialog";
-import { use, useEffect, useState } from "react";
+import { Board, BoardColumn, RoleType, User } from "@prisma/client";
+import { TaskList } from "./(components)/tasks-list";
+import { CreateTaskDialog } from "./(components)/create-task-dialog";
+import { useEffect, useState } from "react";
 import { moveTaskToColumn, NEED_TO_RENAME_FN } from "../../(actions)";
 import { endSprint, getCurrentSprint } from "../../(actions)/sprint-actions";
 import { Button } from "@/components/ui/button";
@@ -56,9 +49,7 @@ export const BoardList = ({ board, user, userList, id }: Props) => {
 
   let refresh = "";
 
-  console.log("refresh");
-
-  const onDragStart = (e: React.DragEvent<HTMLDivElement>, taskId: string) => {
+  const onDragStart = (_: React.DragEvent<HTMLDivElement>, taskId: string) => {
     setDragState((p) => ({ ...p, taskId }));
   };
 
@@ -80,13 +71,6 @@ export const BoardList = ({ board, user, userList, id }: Props) => {
     }
   };
 
-  useEffect(() => {
-    NEED_TO_RENAME_FN(id).then(setBoardData);
-    getCurrentSprint(id).then((res) => {
-      setSprintId(res);
-    });
-  }, [id]);
-
   const handleEndSprint = async () => {
     try {
       setIsEndingSprint(true);
@@ -101,16 +85,25 @@ export const BoardList = ({ board, user, userList, id }: Props) => {
     }
   };
 
+  useEffect(() => {
+    NEED_TO_RENAME_FN(id).then(setBoardData);
+    getCurrentSprint(id).then((res) => {
+      setSprintId(res);
+    });
+  }, [id]);
+
   return (
     <>
-      <Button
-        variant="default"
-        className="mt-4 absolute top-[18px] right-[200px]"
-        onClick={handleEndSprint}
-        disabled={isEndingSpring}
-      >
-        {isEndingSpring ? "Завершение..." : "Закончить спринт"}
-      </Button>
+      {can(user.role.role, "sprint", "update") && (
+        <Button
+          variant="default"
+          className="mt-4 absolute top-[18px] right-[200px]"
+          onClick={handleEndSprint}
+          disabled={isEndingSpring}
+        >
+          {isEndingSpring ? "Завершение..." : "Закончить спринт"}
+        </Button>
+      )}
       <div className="flex gap-4">
         {boardData?.columns.map((column) => (
           <Card.Wrapper

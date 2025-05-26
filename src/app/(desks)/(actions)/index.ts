@@ -1,75 +1,6 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import {
-  Board,
-  BoardColumn,
-  Subtask,
-  Task,
-  TaskPriority,
-} from "@prisma/client";
-import { NewTask } from "../(components)/create-task-dialog";
-
-export interface BoardData {
-  title: Board["title"];
-  ownerId: Board["ownerId"];
-  columns?: BoardColumn[];
-}
-
-export interface BoardColumnData {
-  boardId: BoardColumn["boardId"];
-  status: BoardColumn["status"];
-  title: BoardColumn["title"];
-  position: BoardColumn["position"];
-}
-
-export const createBoard = async ({ columns, ownerId, title }: BoardData) => {
-  return await prisma.board.create({
-    data: {
-      title,
-      ownerId,
-      columns: {
-        create: columns,
-      },
-    },
-  });
-};
-
-export const createBoardColumn = async ({
-  boardId,
-  status,
-  title,
-  position,
-}: BoardColumnData) => {
-  return prisma.boardColumn.createMany({
-    data: {
-      boardId,
-      status,
-      title,
-      position,
-    },
-  });
-};
-
-export const moveBoardColumnPosition = async ({
-  columnId,
-  newPosition,
-}: {
-  columnId: BoardColumn["boardId"];
-  newPosition: BoardColumn["position"];
-}) => {
-  return await prisma.boardColumn.update({
-    where: { id: columnId },
-    data: { position: newPosition },
-  });
-};
-
-export const deleteBoardColumn = async (id: string) => {
-  await prisma.boardColumn.delete({
-    where: {
-      id,
-    },
-  });
-};
+import { Board, Subtask, Task, TaskPriority } from "@prisma/client";
 
 export const getBoardById = async (id: Board["id"]) => {
   return await prisma.board.findUnique({
@@ -101,43 +32,6 @@ export interface TaskData {
   approved?: boolean;
   priority: TaskPriority;
 }
-
-export const createTask = async ({
-  title,
-  description,
-  columnId,
-  sectionId,
-  assigneeId,
-  sprintId,
-  startDate,
-  endDate,
-  subtasks = [],
-  creatorId,
-  priority,
-  approved = false,
-}: NewTask) => {
-  return await prisma.task.create({
-    data: {
-      creatorId,
-      title,
-      description,
-      columnId,
-      sectionId,
-      assigneeId,
-      sprintId,
-      startDate,
-      endDate,
-      priority,
-      approved,
-      subtasks: {
-        create: subtasks.map((subtaskTitle) => ({
-          title: subtaskTitle,
-          columnId: columnId || "",
-        })),
-      },
-    },
-  });
-};
 
 export const getUsersByBoardId = async (boardId: string) => {
   return await prisma.user.findMany({
@@ -200,51 +94,6 @@ export const updateTask = async ({
           },
         })),
       },
-    },
-  });
-};
-
-export const updateBoardColumn = async ({
-  id,
-  title,
-  status,
-}: {
-  id: string;
-  title: string;
-  status: string;
-}) => {
-  return await prisma.boardColumn.update({
-    where: { id },
-    data: { title, status },
-  });
-};
-
-export const getTasksWithSubtasks2 = async (columnId: string) => {
-  return await prisma.task.findMany({
-    where: {
-      columnId,
-    },
-    include: {
-      subtasks: true,
-      assignee: {
-        include: {
-          role: true,
-        },
-      },
-    },
-  });
-};
-
-export const updateBoardTitle = async (
-  id: Board["id"],
-  title: Board["title"]
-) => {
-  return await prisma.board.update({
-    data: {
-      title,
-    },
-    where: {
-      id,
     },
   });
 };

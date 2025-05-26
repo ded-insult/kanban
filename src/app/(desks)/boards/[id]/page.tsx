@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import { getUsersByBoardId, NEED_TO_RENAME_FN } from "../../(actions)";
 import { BoardList } from "./board-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SprintSection } from "../../(components)/sprint-section";
+import { SprintSection } from "./(components)/sprint-section";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
@@ -36,13 +36,13 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       <Tabs defaultValue="sprint">
         <TabsList className="flex gap-8 bg-transparent">
           <TabsTrigger
-            className="text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
+            className="cursor-pointer text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
             value="sprint"
           >
             Спринты
           </TabsTrigger>
           <TabsTrigger
-            className="text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
+            className="cursor-pointer text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
             value="desk"
           >
             Доска

@@ -1,22 +1,22 @@
 "use client";
 import { Role, Sprint, SprintStatus, Task, User } from "@prisma/client";
 import { useLayoutEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { CalendarDays } from "lucide-react";
+import { SprintDialog } from "../../../(components)/sprint-dialog";
+import { Clock, ListTodo } from "lucide-react";
+import { priorityLabels } from "@/lib/priority";
+import { SprintTaskCreateDialog } from "./sprint-task-create-dialog";
+import { getCurrentUser } from "@/lib/auth2";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
+  deleteSprint,
   deleteSprintTask,
   getSprint,
   startSprint,
-  deleteSprint,
-} from "../(actions)/sprint-actions";
-import { useParams } from "next/navigation";
-import { CalendarDays } from "lucide-react";
-import { SprintDialog } from "./sprint-dialog";
-import { Clock, ListTodo } from "lucide-react";
-import { priorityLabels } from "@/lib/priority";
-import { SprintTaskCreate } from "./sprint-task-create";
-import { getCurrentUser } from "@/lib/auth2";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+} from "../(actions)";
 
 type NewSprint = Sprint & {
   backlog: Task[];
@@ -169,14 +169,17 @@ export const SprintSection = () => {
                 <div className="flex justify-center text-sm text-gray-600 mt-2">
                   <span>{sprintLocalize[sprint.status]}</span>
                 </div>
-                {sprint.status === "NOT_STARTED" && (
-                  <Button
-                    className="w-full mt-4 bg-blue-500"
-                    onClick={() => handleStartSprint(sprint.id)}
-                  >
-                    Начать спринт
-                  </Button>
-                )}
+                {sprint.status === "NOT_STARTED" &&
+                  !sprints.find(
+                    (sprint) => sprint.status === "IN_PROGRESS"
+                  ) && (
+                    <Button
+                      className="w-full mt-4 bg-blue-500"
+                      onClick={() => handleStartSprint(sprint.id)}
+                    >
+                      Начать спринт
+                    </Button>
+                  )}
               </div>
 
               <div className="mt-6">
@@ -296,12 +299,9 @@ export const SprintSection = () => {
                 <span className="text-sm text-gray-600">
                   Всего задач: {sprint.backlog.length}
                 </span>
-                {/* <Button variant="outline" size="sm">
-                  Добавить задачу
-                </Button> */}
 
                 {user && sprint.status !== "COMPLETED" && (
-                  <SprintTaskCreate
+                  <SprintTaskCreateDialog
                     onTaskCreated={() => {
                       getSprint(id).then((data) => {
                         setSprints(data);

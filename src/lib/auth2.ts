@@ -1,6 +1,6 @@
 "use server";
 
-import { Role, RoleType, User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import bcryptjs from "bcryptjs";
@@ -20,7 +20,8 @@ export async function register(formData: FormData) {
   });
 
   const cookie = await cookies();
-  cookie.set("user", JSON.stringify(user));
+  const { password: psw, ...rest } = user;
+  cookie.set("user", JSON.stringify(rest));
 }
 
 export async function login(formData: FormData) {

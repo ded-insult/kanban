@@ -9,9 +9,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { createTask, TaskData } from "../(actions)";
-import { Role, RoleType, Subtask, Task } from "@prisma/client";
-import { AddBoardUsersDialog } from "./add-board-users-dialog";
+import { createTask } from "../(actions)";
+import { Role, RoleType, Task } from "@prisma/client";
+import { AddBoardUsersDialog } from "../../../(components)/add-board-users-dialog";
 import { can } from "@/lib/permissions";
 import { priorityLabels } from "@/lib/priority";
 
