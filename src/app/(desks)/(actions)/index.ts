@@ -98,27 +98,6 @@ export const updateTask = async ({
   });
 };
 
-export const getAllUsers = async () => {
-  return await prisma.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      role: true,
-    },
-  });
-};
-
-export const addUserToBoard = async (boardId: string, userId: string) => {
-  return await prisma.board.update({
-    where: { id: boardId },
-    data: {
-      users: {
-        connect: { id: userId },
-      },
-    },
-  });
-};
-
 export const deleteTask = async (id: string) => {
   return await prisma.task.delete({
     where: { id },

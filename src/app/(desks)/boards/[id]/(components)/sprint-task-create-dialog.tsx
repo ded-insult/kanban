@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { Task, TaskPriority } from "@prisma/client";
 import { priorityLabels } from "@/lib/priority";
-import { createSprintTask } from "../../../(actions)/sprint-actions";
+import { createSprintTask } from "../(actions)";
 
 interface Props {
   userRole: string;

@@ -1,7 +1,17 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { Board, Sprint, Task } from "@prisma/client";
+import { Board, Sprint, Task, TaskPriority } from "@prisma/client";
 import { NewTask } from "../(components)/create-task-dialog";
+
+interface Test {
+  title: Sprint["title"];
+  description: Task["description"];
+  priority: TaskPriority;
+  startDate: Sprint["startDate"];
+  endDate: Sprint["endDate"];
+  creatorId: Task["creatorId"];
+  sprintId: Sprint["id"];
+}
 
 export const deleteSprintTask = async (taskId: Task["id"]) => {
   await prisma.task.delete({
@@ -100,6 +110,27 @@ export const getTasksWithSubtasks2 = async (columnId: string) => {
   });
 };
 
+export const getAllUsers = async () => {
+  return await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      role: true,
+    },
+  });
+};
+
+export const addUserToBoard = async (boardId: string, userId: string) => {
+  return await prisma.board.update({
+    where: { id: boardId },
+    data: {
+      users: {
+        connect: { id: userId },
+      },
+    },
+  });
+};
+
 export const createTask = async ({
   title,
   description,
@@ -133,6 +164,24 @@ export const createTask = async ({
           columnId: columnId || "",
         })),
       },
+    },
+  });
+};
+
+export const createSprintTask = async (data: Test) => {
+  return await prisma.task.create({
+    // data,
+    data: {
+      title: data.title,
+      description: data.description,
+      priority: data.priority,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      creatorId: data.creatorId,
+      sprintId: data.sprintId,
+    },
+    include: {
+      assignee: true,
     },
   });
 };

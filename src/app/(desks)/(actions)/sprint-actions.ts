@@ -2,34 +2,6 @@
 import { prisma } from "@/lib/prisma";
 import { Board, Sprint, Task, TaskPriority } from "@prisma/client";
 
-interface Test {
-  title: Sprint["title"];
-  description: Task["description"];
-  priority: TaskPriority;
-  startDate: Sprint["startDate"];
-  endDate: Sprint["endDate"];
-  creatorId: Task["creatorId"];
-  sprintId: Sprint["id"];
-}
-
-export const createSprintTask = async (data: Test) => {
-  return await prisma.task.create({
-    // data,
-    data: {
-      title: data.title,
-      description: data.description,
-      priority: data.priority,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      creatorId: data.creatorId,
-      sprintId: data.sprintId,
-    },
-    include: {
-      assignee: true,
-    },
-  });
-};
-
 export const createSprint = async (data: {
   title: Sprint["title"];
   boardId: Sprint["boardId"];
