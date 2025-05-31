@@ -12,7 +12,11 @@ export type Sprints = Awaited<ReturnType<typeof getSprints>>;
 export type Sprint = Awaited<ReturnType<typeof getCurrentSprint>>;
 export type Tasks = Awaited<ReturnType<typeof getBoardTasksGroupedByColumns>>;
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const board = await getBoard(id);
