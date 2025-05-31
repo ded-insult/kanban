@@ -1,7 +1,9 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { Board, Sprint, Task, TaskPriority } from "@prisma/client";
-import { NewTask } from "../(components)/create-task-dialog";
+import { Board, Prisma, Sprint, Task, TaskPriority } from "@prisma/client";
+import { NewTask } from "../(components)/create-task-extened-dialog";
+import { cookies } from "next/headers";
+import { User } from "../page";
 
 interface Test {
   title: Sprint["title"];
@@ -9,7 +11,7 @@ interface Test {
   priority: TaskPriority;
   startDate: Sprint["startDate"];
   endDate: Sprint["endDate"];
-  creatorId: Task["creatorId"];
+  creatorId?: Task["creatorId"];
   sprintId: Sprint["id"];
 }
 
@@ -19,7 +21,7 @@ export const deleteSprintTask = async (taskId: Task["id"]) => {
   });
 };
 
-export const getSprint = async (boardId: Board["id"]) =>
+export const getSprints = async (boardId: Board["id"]) =>
   await prisma.sprint.findMany({
     where: { boardId },
     include: {
@@ -141,13 +143,27 @@ export const createTask = async ({
   startDate,
   endDate,
   subtasks = [],
-  creatorId,
+  // creatorId,
   priority,
   approved = false,
 }: NewTask) => {
+  const cookie = (await cookies()).get("user")?.value;
+
+  if (!cookie) {
+    throw new Error("No user found");
+  }
+
+  const user = (await JSON.parse(cookie)) as User;
+
+  if (!user) {
+    throw new Error("No user found");
+  }
+
+  console.log(user, "bebra");
+
   return await prisma.task.create({
     data: {
-      creatorId,
+      creatorId: user.id,
       title,
       description,
       columnId,
@@ -169,6 +185,18 @@ export const createTask = async ({
 };
 
 export const createSprintTask = async (data: Test) => {
+  const cookie = (await cookies()).get("user")?.value;
+
+  if (!cookie) {
+    throw new Error("No user found");
+  }
+
+  const user = JSON.parse(cookie) as User;
+
+  if (!user) {
+    throw new Error("No user found");
+  }
+
   return await prisma.task.create({
     // data,
     data: {
@@ -177,7 +205,8 @@ export const createSprintTask = async (data: Test) => {
       priority: data.priority,
       startDate: data.startDate,
       endDate: data.endDate,
-      creatorId: data.creatorId,
+      // creatorId: data.creatorId,
+      creatorId: user?.id,
       sprintId: data.sprintId,
     },
     include: {
@@ -185,3 +214,75 @@ export const createSprintTask = async (data: Test) => {
     },
   });
 };
+
+export const getBoardTasksGroupedByColumns = async (boardId: string) => {
+  const columns = await prisma.boardColumn.findMany({
+    where: { boardId },
+    orderBy: { position: "asc" },
+    include: {
+      tasks: {
+        include: {
+          assignee: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+            },
+          },
+          creator: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          subtasks: {
+            include: {
+              assignee: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return columns.map((column) => ({
+    columnId: column.id,
+    columnTitle: column.title,
+    tasks: column.tasks,
+  }));
+};
+
+const fullTaskWithRelations = Prisma.validator<Prisma.TaskInclude>()({
+  assignee: {
+    select: {
+      id: true,
+      name: true,
+      role: true,
+    },
+  },
+  creator: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+  subtasks: {
+    include: {
+      assignee: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  },
+});
+
+export type FullTask = Prisma.TaskGetPayload<{
+  include: typeof fullTaskWithRelations;
+}>;

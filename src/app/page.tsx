@@ -4,12 +4,14 @@ import { routes } from "@/constants/routes";
 import { getCurrentUser } from "@/lib/auth2";
 import { prisma } from "@/lib/prisma";
 import { RegisterFormByAdmin } from "@/app/(auth)/login/(components)/register-form-admin";
-import { checkAdmin } from "@/lib/check-admin";
+import { checkAdminV2 } from "@/lib/check-admin";
+import { Role, User } from "@prisma/client";
 
 export default async function Home() {
-  const user = await getCurrentUser();
-  const admin = await checkAdmin(user);
-  const roles = await prisma.role.findMany();
+  const [user, roles] = await Promise.all([
+    getCurrentUser(),
+    prisma.role.findMany(),
+  ]);
 
   return (
     <div>
@@ -22,7 +24,9 @@ export default async function Home() {
         </LinkUI>
       )}
 
-      {admin && <RegisterFormByAdmin roles={roles} />}
+      {checkAdminV2(user as User & { role: Role }) && (
+        <RegisterFormByAdmin roles={roles} />
+      )}
     </div>
   );
 }

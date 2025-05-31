@@ -1,0 +1,44 @@
+"use client";
+import { useState } from "react";
+import { deleteSprint, startSprint } from "../../../(actions)";
+
+export const useSprintCard = (boardId: string) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleStartSprint = async (sprintId: string) => {
+    try {
+      await startSprint(sprintId, boardId);
+      // Refresh sprints data
+      //   const updatedSprints = await getSprint(id);
+      //   setSprints(updatedSprints);
+    } catch (error) {
+      console.error("Error starting sprint:", error);
+      alert("Создайте хотя бы одну колонку для доски");
+    }
+  };
+
+  const handleDeleteSprint = async (sprintId: string) => {
+    if (
+      !confirm(
+        "Вы уверены, что хотите удалить спринт? Все задачи будут удалены."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await deleteSprint(sprintId);
+      //   const updatedSprints = await getSprint(id);
+      //   setSprints(updatedSprints);
+    } catch (error) {
+      console.error("Error deleting sprint:", error);
+      alert("Ошибка при удалении спринта");
+    }
+  };
+
+  const handleExpand = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
+  return { isExpanded, handleExpand, handleStartSprint, handleDeleteSprint };
+};

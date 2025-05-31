@@ -60,9 +60,10 @@ const permissions: Record<RoleType, Record<Entity, Record<Action, boolean>>> = {
 };
 
 export const can = (
-  roleType: RoleType,
+  roleType: RoleType | undefined | null,
   entity: Entity,
   action: Action
 ): boolean => {
+  if (!roleType) return false;
   return permissions[roleType]?.[entity]?.[action] ?? false;
 };

@@ -9,37 +9,38 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { createTask } from "../(actions)";
-import { Role, RoleType, Task } from "@prisma/client";
-import { AddBoardUsersDialog } from "./add-board-users-dialog";
-import { can } from "@/lib/permissions";
+import { Task, TaskPriority } from "@prisma/client";
 import { priorityLabels } from "@/lib/priority";
-
-type User = {
-  id: string;
-  name: string;
-  role: Role;
-};
+import { createSprintTask } from "../(actions)";
 
 interface Props {
-  columnId: string;
-  userRole: string;
-  userId: string;
-  boardId: string;
   sprintId: string;
-  userList: User[];
+  userRole?: string;
+  userId?: string;
+  onTaskCreated?: () => void;
 }
 
-// const initialFormData: TaskData = {
 export type NewTask = Omit<Task, "id"> & { subtasks: string[] };
-const initialFormData: NewTask = {
-  columnId: "",
+
+type TaskData = {
+  title: string;
+  description: string;
+  sprintId: string | null;
+  creatorId: string;
+  assigneeId: string;
+  subtasks: string[];
+  approved: boolean;
+  startDate: Task["startDate"];
+  endDate: Task["endDate"];
+  priority: TaskPriority;
+};
+
+const initialFormData: TaskData = {
   creatorId: "",
   title: "",
+  endDate: new Date(),
+  startDate: new Date(),
   description: "",
-  sectionId: null,
-  startDate: null,
-  endDate: null,
   sprintId: null,
   assigneeId: "",
   subtasks: [],
@@ -51,31 +52,11 @@ const formatDate = (date: Date | null): string => {
   return date ? date.toISOString().split("T")[0] : "";
 };
 
-export const CreateTaskDialog = ({
-  columnId,
-  userList,
-  boardId,
-  userRole,
-  sprintId,
-  userId,
-}: Props) => {
-  const [formData, setFormData] = useState<NewTask>({
+export const CreateTaskDialog = ({ onTaskCreated, sprintId }: Props) => {
+  const [formData, setFormData] = useState<TaskData>({
     ...initialFormData,
-    columnId,
     sprintId,
-    creatorId: userId,
   });
-  const [newSubtask, setNewSubtask] = useState("");
-
-  const addSubtask = () => {
-    if (newSubtask) {
-      setFormData((prevData) => ({
-        ...prevData,
-        subtasks: [...(prevData.subtasks ?? []), newSubtask],
-      }));
-      setNewSubtask("");
-    }
-  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -92,26 +73,34 @@ export const CreateTaskDialog = ({
   };
 
   const onSubmit = async () => {
-    if (!formData.title || !formData.assigneeId || !formData.creatorId) {
+    if (!formData.title) {
       alert("Введите название карточки");
       return;
     }
     try {
-      await createTask(formData);
+      await createSprintTask({
+        sprintId: formData.sprintId!,
+        // creatorId: formData.creatorId,
+        title: formData.title,
+        description: formData.description || "",
+        priority: formData.priority,
+        startDate: new Date(formData.startDate!),
+        endDate: new Date(formData.endDate!),
+      });
       alert("Успешно");
       setFormData(() => {
         const newData = {
           ...initialFormData,
-          columnId,
-
-          creatorId: userId,
+          // creatorId: userId,
+          sprintId,
           priority: "LOW",
-        } as NewTask;
+        } as TaskData;
 
         return {
           ...newData,
         };
       });
+      onTaskCreated?.();
     } catch (e) {
       alert("Ошибка");
     }
@@ -119,8 +108,8 @@ export const CreateTaskDialog = ({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="default">Создать карточку</Button>
+      <DialogTrigger className="cursor-pointer">
+        <span>Создать карточку</span>
       </DialogTrigger>
       <DialogContent className="overflow-y-scroll max-h-[500px]">
         <DialogHeader>
@@ -144,7 +133,6 @@ export const CreateTaskDialog = ({
             className="border p-2 rounded"
           />
 
-          {/* Add priority selection */}
           <div>
             <label className="block mb-2 text-sm font-medium">Приоритет</label>
             <select
@@ -161,14 +149,6 @@ export const CreateTaskDialog = ({
             </select>
           </div>
 
-          {/* <input
-              type="text"
-              name="sectionId"
-              placeholder="ID секции (если есть)"
-              value={formData.sectionId || ""}
-              onChange={handleChange}
-              className="border p-2 rounded"
-            /> */}
           <label className="block mb-2 text-sm font-medium">Дата начала</label>
           <input
             type="date"
@@ -187,75 +167,13 @@ export const CreateTaskDialog = ({
             onChange={handleChange}
             className="border p-2 rounded"
           />
-          {/* <input
-              type="text"
-              name="sprintId"
-              placeholder="ID спринта (если есть)"
-              value={formData.sprintId || ""}
-              onChange={handleChange}
-              className="border p-2 rounded"
-            /> */}
-          <div>
-            <label className="block mb-2 text-sm font-medium">Подзадачи</label>
-
-            <input
-              type="text"
-              placeholder="Добавить подзадачу"
-              value={newSubtask}
-              onChange={(e) => setNewSubtask(e.target.value)}
-              className="border p-2 rounded"
-            />
-            <Button variant="default" onClick={addSubtask}>
-              Добавить подзадачу
-            </Button>
-            <ul>
-              {formData.subtasks?.map((subtask, index) => (
-                <li key={index}>{subtask}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {userList.length > 0 && (
-          <>
-            <label className="block mb-2 text-sm font-medium">
-              Исполнитель
-            </label>
-
-            <select
-              name="assigneeId"
-              value={formData.assigneeId || ""}
-              onChange={handleChange}
-              className="border p-2 rounded"
-            >
-              <option value="">Выберите исполнителя</option>
-              {userList.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.name} ({user.role.name})
-                </option>
-              ))}
-            </select>
-          </>
-        )}
-        <div className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-md">
-          {userList.length === 0 && (
-            <p className="text-sm text-gray-600">Нет доступных исполнителей</p>
-          )}
-          {can(userRole as RoleType, "board", "update") && (
-            <AddBoardUsersDialog boardId={boardId} />
-          )}
         </div>
 
         <DialogFooter>
-          <div>
-            <Button variant="default" type="submit" onClick={onSubmit}>
-              Создать
-            </Button>
-            <DialogTrigger>
-              Отмена
-              {/* <Button variant="default">Отмена</Button> */}
-            </DialogTrigger>
-          </div>
+          <Button variant="default" type="submit" onClick={onSubmit}>
+            Создать
+          </Button>
+          <DialogTrigger>Отмена</DialogTrigger>
         </DialogFooter>
       </DialogContent>
     </Dialog>

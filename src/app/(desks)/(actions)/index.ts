@@ -33,7 +33,7 @@ export interface TaskData {
   priority: TaskPriority;
 }
 
-export const getUsersByBoardId = async (boardId: string) => {
+export const getBoardParticipant = async (boardId: string) => {
   return await prisma.user.findMany({
     where: {
       boards: {
@@ -111,7 +111,7 @@ export const moveTaskToColumn = async (taskId: string, newColumnId: string) => {
   });
 };
 
-export const NEED_TO_RENAME_FN = async (id: string) =>
+export const getBoard = async (id: string) =>
   await prisma.board.findUnique({
     where: { id },
     include: {

@@ -75,9 +75,7 @@ export const AddBoardUsersDialog = ({ boardId, onUserAdded }: Props) => {
           ))}
         </div>
         <DialogFooter>
-          <Button disabled={loading} onClick={() => {}}>
-            Закрыть
-          </Button>
+          <DialogTrigger>Закрыть</DialogTrigger>
         </DialogFooter>
       </DialogContent>
     </Dialog>

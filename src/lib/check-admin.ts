@@ -1,6 +1,9 @@
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { prisma } from "./prisma";
 
+/**
+ * @deprecated Используй `checkAdminV2` вместо этой функции.
+ */
 export const checkAdmin = async (user: User | null) => {
   if (!user) return;
 
@@ -14,5 +17,10 @@ export const checkAdmin = async (user: User | null) => {
   });
 
   if (value?.role.role === "ADMIN") return true;
+  return false;
+};
+
+export const checkAdminV2 = (user: User & { role: Role }) => {
+  if (user?.role?.role === "ADMIN") return true;
   return false;
 };

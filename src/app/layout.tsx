@@ -1,11 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/shared/globals.css";
-import {
-  BoardIcon,
-  LinkUI,
-  PermissionIcon,
-  SettingsIcon,
-} from "@/components/ui/link";
+import { BoardIcon, LinkUI, PermissionIcon } from "@/components/ui/link";
 import React from "react";
 import { routes } from "@/constants/routes";
 import { Header } from "./header";
@@ -68,12 +63,6 @@ const Sidebar = () => {
             Мои доступы
           </span>
         </LinkUI>
-        {/* <LinkUI theme="dark" href="#" className="group">
-          <span className="flex items-center gap-3">
-            <SettingsIcon className="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-colors" />
-            Настройки
-          </span>
-        </LinkUI> */}
       </nav>
     </aside>
   );
