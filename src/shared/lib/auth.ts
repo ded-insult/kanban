@@ -5,24 +5,24 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import bcryptjs from "bcryptjs";
 import { prisma } from "./prisma";
-import { routes } from "@/constants/routes";
+import { routes } from "@/shared/constants/routes";
 
-export async function register(formData: FormData) {
-  const name = formData.get("name") as string;
-  const password = formData.get("password") as string;
+// export async function register(formData: FormData) {
+//   const name = formData.get("name") as string;
+//   const password = formData.get("password") as string;
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      password,
-      roleId: "user",
-    },
-  });
+//   const user = await prisma.user.create({
+//     data: {
+//       name,
+//       password,
+//       roleId: "user",
+//     },
+//   });
 
-  const cookie = await cookies();
-  const { password: psw, ...rest } = user;
-  cookie.set("user", JSON.stringify(rest));
-}
+//   const cookie = await cookies();
+//   const { password: psw, ...rest } = user;
+//   cookie.set("user", JSON.stringify(rest));
+// }
 
 export async function login(formData: FormData) {
   const name = formData.get("name") as string;
@@ -48,7 +48,9 @@ export async function login(formData: FormData) {
   }
 
   const cookie = await cookies();
-  cookie.set("user", JSON.stringify(user));
+  const { password: _, ...userWithoutPasswor } = user;
+
+  cookie.set("user", JSON.stringify(userWithoutPasswor));
   redirect(routes.home);
 }
 

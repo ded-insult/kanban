@@ -1,5 +1,5 @@
 "use server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 import { Board, Subtask, Task, TaskPriority } from "@prisma/client";
 
 export const getBoardById = async (id: Board["id"]) => {

@@ -1,7 +1,7 @@
-import { ProtectedRoute } from "@/modules/auth/auth-context";
-import { getCurrentUser } from "@/lib/auth2";
+import { ProtectedRoute } from "@/app/(protected)/protected-route";
+import { getCurrentUser } from "@/shared/lib/auth";
 import { redirect } from "next/navigation";
-import { can } from "@/lib/permissions";
+import { can } from "@/shared/lib/permissions";
 import { actions, entities, roles, translations } from "./(constants)";
 
 export default async function Page() {

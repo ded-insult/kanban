@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { LinkUI } from "@/components/ui/link";
-import { routes } from "@/constants/routes";
-import { getCurrentUser, logout } from "@/lib/auth2";
+import { routes } from "@/shared/constants/routes";
+import { getCurrentUser, logout } from "@/shared/lib/auth";
 
 export const Header = async () => {
   const user = await getCurrentUser();

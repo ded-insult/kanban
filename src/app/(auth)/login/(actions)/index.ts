@@ -1,5 +1,5 @@
 "use server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 import { Role, RoleType, User } from "@prisma/client";
 
 export const getAllRoles = async () => {

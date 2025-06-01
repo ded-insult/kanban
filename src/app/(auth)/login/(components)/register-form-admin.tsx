@@ -3,7 +3,6 @@
 import { Role, RoleType } from "@prisma/client";
 import { createRoleByName, registerUser } from "../(actions)";
 import { useState } from "react";
-import { CreateRoleDialog } from "./create-role-dialog";
 import {
   Select,
   SelectContent,
@@ -12,9 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CreateRoleDialog } from "./create-role-dialog";
 
 export const RegisterFormByAdmin = ({ roles }: { roles: Role[] }) => {
-  // Dialog
   const [roleName, setRoleName] = useState<Role["name"]>("");
   const [roleType, setRoleType] = useState<RoleType>("MANAGER");
 

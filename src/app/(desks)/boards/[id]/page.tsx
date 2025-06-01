@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth2";
+import { getCurrentUser } from "@/shared/lib/auth";
 import { getBoardParticipant, getBoard } from "../../(actions)";
 import { getBoardTasksGroupedByColumns, getSprints } from "./(actions)";
 
@@ -21,7 +21,7 @@ export default async function Page({
 
   const board = await getBoard(id);
   const user = await getCurrentUser();
-  const userList = await getBoardParticipant(id);
+  const participants = await getBoardParticipant(id);
   const sprints = await getSprints(id);
   const tasks = await getBoardTasksGroupedByColumns(id);
   const sprint = await getCurrentSprint(id);
@@ -35,7 +35,7 @@ export default async function Page({
       sprints={sprints}
       tasks={tasks}
       user={user}
-      userList={userList}
+      participants={participants}
       id={id}
     />
   );

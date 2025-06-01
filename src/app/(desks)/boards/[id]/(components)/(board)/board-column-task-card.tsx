@@ -1,5 +1,5 @@
-import { priorityColors, priorityLabels } from "@/lib/priority";
 import { FullTask } from "../../(actions)";
+import { LabelTask } from "@/components/ui/task-label";
 
 export const BoardColumnTaskCard = ({
   task,
@@ -10,14 +10,9 @@ export const BoardColumnTaskCard = ({
   onDragEnd: () => void;
   onDragStart: (e: React.DragEvent<HTMLDivElement>, taskId: string) => void;
 }) => {
-  // const drag = useDragBoard();
-
   return (
     <div
       draggable={true}
-      // onDragEnd={onDragEnd}
-      // onDragStart={(e) => onDragStart(e, task.id)}
-
       onDragEnd={onDragEnd}
       onDragStart={(e) => onDragStart(e, task.id)}
       className={`task-card bg-white border border-gray-200 shadow-sm rounded-lg p-6 hover:shadow-md transition-shadow cursor-move
@@ -28,13 +23,15 @@ export const BoardColumnTaskCard = ({
           <h3 className="task-title text-lg font-semibold text-gray-900 break-words">
             {task.title}
           </h3>
-          <span
+          {/* <span
             className={`text-xs px-2 py-1 rounded-full w-fit ${
               priorityColors[task.priority]
             }`}
           >
             {priorityLabels[task.priority]}
-          </span>
+          </span> */}
+
+          <LabelTask priority={task.priority} />
           {/* <EditTaskDialog
             userRole={user!.role.role}
             task={task}

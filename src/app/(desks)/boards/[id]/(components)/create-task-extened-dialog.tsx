@@ -12,8 +12,8 @@ import { useState } from "react";
 import { createTask } from "../(actions)";
 import { Task } from "@prisma/client";
 import { AddBoardUsersDialog } from "./add-board-users-dialog";
-import { priorityLabels } from "@/lib/priority";
 import { BoardParticipants } from "../page";
+import { PriorityOptionsList } from "@/components/ui/task-label";
 
 interface Props {
   columnId: string;
@@ -142,11 +142,13 @@ export const CreateTaskExtendedDialog = ({
               onChange={handleChange}
               className="border p-2 rounded w-full"
             >
-              {Object.entries(priorityLabels).map(([value, label]) => (
+              {/* {Object.entries(priorityLabels).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
-              ))}
+              ))} */}
+
+              <PriorityOptionsList />
             </select>
           </div>
 

@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@/shared/globals.css";
 import { BoardIcon, LinkUI, PermissionIcon } from "@/components/ui/link";
 import React from "react";
-import { routes } from "@/constants/routes";
+import { routes } from "@/shared/constants/routes";
 import { Header } from "./header";
 
 const geistSans = Geist({
@@ -41,7 +41,6 @@ export default async function RootLayout({
             <main className="flex-1 p-4 overflow-auto">{render()}</main>
           </div>
         </div>
-        {/* </AuthProvider> */}
       </body>
     </html>
   );

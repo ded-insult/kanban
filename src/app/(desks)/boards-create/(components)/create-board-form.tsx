@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import React, { FormEvent, useState } from "react";
 import { BoardData, createBoard } from "../(actions)";
 import { BoardColumn } from "@prisma/client";
-import { getCurrentUser } from "@/lib/auth2";
+import { getCurrentUser } from "@/shared/lib/auth";
 import { flushSync } from "react-dom";
 
 enum Step {

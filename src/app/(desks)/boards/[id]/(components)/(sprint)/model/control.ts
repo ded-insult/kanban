@@ -1,6 +1,6 @@
 import { Sprint } from "@prisma/client";
 import { Sprints, User } from "../../../page";
-import { can } from "@/lib/permissions";
+import { can } from "@/shared/lib/permissions";
 
 // Start sprint
 export const noActiveSprint = (sprints: Sprints) => {

@@ -1,6 +1,6 @@
 import { LinkUI } from "@/components/ui/link";
-import { routes } from "@/constants/routes";
-import { prisma } from "@/lib/prisma";
+import { routes } from "@/shared/constants/routes";
+import { prisma } from "@/shared/lib/prisma";
 
 export const BoardsList = async () => {
   const boards = await prisma.board.findMany();

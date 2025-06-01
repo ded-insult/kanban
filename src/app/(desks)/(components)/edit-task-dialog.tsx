@@ -12,8 +12,8 @@ import { RoleType, Subtask, Task, User } from "@prisma/client";
 import { useState } from "react";
 import { deleteTask, updateTask } from "../(actions)";
 
-import { can } from "@/lib/permissions";
-import { priorityLabels } from "@/lib/priority";
+import { can } from "@/shared/lib/permissions";
+import { PriorityOptionsList } from "@/components/ui/task-label";
 
 interface EditTaskDialogProps {
   task: Task & {
@@ -176,11 +176,12 @@ export const EditTaskDialog = ({
               onChange={handleTaskChange}
               className="w-full p-2 border rounded"
             >
-              {Object.entries(priorityLabels).map(([value, label]) => (
+              {/* {Object.entries(priorityLabels).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
-              ))}
+              ))} */}
+              <PriorityOptionsList />
             </select>
           </div>
         </div>

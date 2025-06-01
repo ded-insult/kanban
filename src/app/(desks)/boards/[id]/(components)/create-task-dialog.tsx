@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Task, TaskPriority } from "@prisma/client";
-import { priorityLabels } from "@/lib/priority";
 import { createSprintTask } from "../(actions)";
+import { PriorityOptionsList } from "@/components/ui/task-label";
 
 interface Props {
   sprintId: string;
@@ -132,7 +132,6 @@ export const CreateTaskDialog = ({ onTaskCreated, sprintId }: Props) => {
             onChange={handleChange}
             className="border p-2 rounded"
           />
-
           <div>
             <label className="block mb-2 text-sm font-medium">Приоритет</label>
             <select
@@ -141,11 +140,7 @@ export const CreateTaskDialog = ({ onTaskCreated, sprintId }: Props) => {
               onChange={handleChange}
               className="border p-2 rounded w-full"
             >
-              {Object.entries(priorityLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
+              <PriorityOptionsList />
             </select>
           </div>
 

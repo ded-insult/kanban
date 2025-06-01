@@ -1,5 +1,5 @@
 "use server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 import { Board, Prisma, Sprint, Task, TaskPriority } from "@prisma/client";
 import { NewTask } from "../(components)/create-task-extened-dialog";
 import { cookies } from "next/headers";

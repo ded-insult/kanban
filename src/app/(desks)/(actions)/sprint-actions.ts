@@ -1,5 +1,5 @@
 "use server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 import { Board, Sprint, Task, TaskPriority } from "@prisma/client";
 
 export const createSprint = async (data: {

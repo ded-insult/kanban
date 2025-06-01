@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth2";
+import { getCurrentUser } from "@/shared/lib/auth";
 import { LoginForm } from "./(components)/login-form";
 import { RegisterFormByAdmin } from "./(components)/register-form-admin";
 import { getAllRoles } from "./(actions)";

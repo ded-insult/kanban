@@ -1,7 +1,7 @@
-import { ProtectedRoute } from "@/modules/auth/auth-context";
+import { ProtectedRoute } from "@/app/(protected)/protected-route";
 import { BoardsList } from "./(components)/boards-list";
-import { getCurrentUser } from "@/lib/auth2";
-import { routes } from "@/constants/routes";
+import { getCurrentUser } from "@/shared/lib/auth";
+import { routes } from "@/shared/constants/routes";
 import { redirect } from "next/navigation";
 import { ContentLayout } from "../(components)/content-layout";
 import { BoardsHeader } from "./(components)/boards-header";

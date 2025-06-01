@@ -1,6 +1,6 @@
-import { ProtectedRoute } from "@/modules/auth/auth-context";
-import { getCurrentUser } from "@/lib/auth2";
-import { routes } from "@/constants/routes";
+import { ProtectedRoute } from "@/app/(protected)/protected-route";
+import { getCurrentUser } from "@/shared/lib/auth";
+import { routes } from "@/shared/constants/routes";
 import { redirect } from "next/navigation";
 import { getBoardById, getBoardColumnsById } from "@/app/(desks)/(actions)";
 import { UpdateBoardColumnsForm } from "@/app/(desks)/boards/[id]/update/(components)/update-board-columns-form";

@@ -1,14 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { LinkUI } from "@/components/ui/link";
-import { routes } from "@/constants/routes";
-import { can } from "@/lib/permissions";
+import { routes } from "@/shared/constants/routes";
+import { can } from "@/shared/lib/permissions";
 import { User } from "../../page";
-import { moveTaskToColumn } from "@/app/(desks)/(actions)";
-import {
-  endSprint,
-  getCurrentSprint,
-} from "@/app/(desks)/(actions)/sprint-actions";
-import { useEffect } from "react";
+import { endSprint } from "@/app/(desks)/(actions)/sprint-actions";
 
 export const BoardActions = ({
   user,

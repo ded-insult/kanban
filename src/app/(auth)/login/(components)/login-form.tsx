@@ -1,4 +1,4 @@
-import { login } from "@/lib/auth2";
+import { login } from "@/shared/lib/auth";
 
 export const LoginForm = () => {
   return (

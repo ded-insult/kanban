@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { priorityLabels } from "@/lib/priority";
 import {
   CalendarDays,
   ChevronUp,
@@ -12,6 +11,7 @@ import { deleteSprintTask } from "../../(actions)";
 import { Sprint, SprintStatus, Task } from "@prisma/client";
 import { useSprintCard } from "./model/use-sprint-card";
 import { useFilters } from "./model/use-filters";
+import { LabelTask } from "@/components/ui/task-label";
 
 type NewSprint = Sprint & {
   backlog: Task[];
@@ -159,7 +159,7 @@ export const SprintCard = ({
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span
+                        {/* <span
                           className={`text-xs px-2 py-1 rounded-full ${
                             {
                               LOW: "bg-gray-100 text-gray-700",
@@ -170,7 +170,8 @@ export const SprintCard = ({
                           }`}
                         >
                           {priorityLabels[task.priority]}
-                        </span>
+                        </span> */}
+                        <LabelTask priority={task.priority} />
                       </div>
                     </div>
                     {task.description && (

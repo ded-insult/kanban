@@ -9,7 +9,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { roleLocalization, rolesList } from "@/constants/roles-lozalization";
+import {
+  roleLocalization,
+  rolesList,
+} from "@/shared/constants/roles-lozalization";
 import { RoleType } from "@prisma/client";
 
 import { Label } from "@radix-ui/react-label";

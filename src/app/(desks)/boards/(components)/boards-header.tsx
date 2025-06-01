@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { LinkUI } from "@/components/ui/link";
-import { routes } from "@/constants/routes";
-import { checkAdminV2 } from "@/lib/check-admin";
+import { routes } from "@/shared/constants/routes";
+import { checkAdminV2 } from "@/shared/lib/check-admin";
 import { Role, User } from "@prisma/client";
 
 export const BoardsHeader = ({ user }: { user: User & { role: Role } }) => {

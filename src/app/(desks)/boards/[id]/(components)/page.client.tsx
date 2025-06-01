@@ -2,7 +2,7 @@
 
 import { ContentLayout } from "@/app/(desks)/(components)/content-layout";
 import { SprintDialog } from "@/app/(desks)/(components)/sprint-dialog";
-import { can } from "@/lib/permissions";
+import { can } from "@/shared/lib/permissions";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
 import {
   Board,
@@ -30,7 +30,7 @@ interface Props {
   id: string;
   board: Board;
   user: User;
-  userList: BoardParticipants;
+  participants: BoardParticipants;
   sprints: Sprints;
   sprint: Sprint;
   tasks: Tasks;
@@ -40,7 +40,7 @@ export const BoardClientView = ({
   id,
   board,
   user,
-  userList,
+  participants,
   sprints,
   sprint,
   tasks,
@@ -73,7 +73,8 @@ export const BoardClientView = ({
               boardId={id}
               canDeleteSprint={canDeleteSprint(user, sprint)}
               canDeleteCardTask={canDeleteTask(user, sprint)}
-              canStart={canStartSprint(sprints, sprint)}
+              // canStart={canStartSprint(sprints, sprint)}
+              canStart={true}
               bottomRightAction={<CreateTaskDialog sprintId={sprint.id} />}
             />
           ))}
@@ -98,7 +99,7 @@ export const BoardClientView = ({
                   canAddParticipant={can(user!.role.role, "board", "update")}
                   sprintId={sprint?.id ?? ""}
                   columnId={column.id}
-                  userList={userList}
+                  userList={participants}
                 />
 
                 {tasks
