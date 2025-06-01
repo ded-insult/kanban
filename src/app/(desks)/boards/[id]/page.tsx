@@ -19,12 +19,16 @@ export default async function Page({
 }) {
   const { id } = await params;
 
-  const board = await getBoard(id);
-  const user = await getCurrentUser();
-  const participants = await getBoardParticipant(id);
-  const sprints = await getSprints(id);
-  const tasks = await getBoardTasksGroupedByColumns(id);
-  const sprint = await getCurrentSprint(id);
+  const [board, user, participants, sprints, tasks, sprint] = await Promise.all(
+    [
+      getBoard(id),
+      getCurrentUser(),
+      getBoardParticipant(id),
+      getSprints(id),
+      getBoardTasksGroupedByColumns(id),
+      getCurrentSprint(id),
+    ]
+  );
 
   if (!board || !user) return null;
 

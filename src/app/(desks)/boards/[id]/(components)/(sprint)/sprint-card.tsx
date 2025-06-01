@@ -62,7 +62,10 @@ export const SprintCard = ({
   const filter = useFilters(sprint);
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-blue-500 transition-colors">
+    <div
+      className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-blue-500 duration-0
+ bg-white rounded-lg p-3 border border-gray-100 transition-colors"
+    >
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-semibold text-gray-900">{sprint.title}</h2>
         <div className="flex items-center gap-2">
@@ -103,7 +106,8 @@ export const SprintCard = ({
         <div className="mt-4">
           <div className="w-full bg-gray-200 rounded-full h-1.5">
             <div
-              className="bg-blue-600 h-1.5 rounded-full animate-pulse"
+              // className="bg-blue-600 h-1.5 rounded-full animate-pulse"
+              className="bg-blue-600 h-1.5 rounded-full"
               style={{ width: sprintCompletion[sprint.status] }}
             ></div>
           </div>

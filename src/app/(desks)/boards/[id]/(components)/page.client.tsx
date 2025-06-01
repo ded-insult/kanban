@@ -75,7 +75,12 @@ export const BoardClientView = ({
               canDeleteCardTask={canDeleteTask(user, sprint)}
               // canStart={canStartSprint(sprints, sprint)}
               canStart={true}
-              bottomRightAction={<CreateTaskDialog sprintId={sprint.id} />}
+              bottomRightAction={
+                <CreateTaskDialog
+                  key="create-dialog-key"
+                  sprintId={sprint.id}
+                />
+              }
             />
           ))}
         </ContentLayout>
