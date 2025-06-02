@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@/shared/lib/prisma";
-import { Board, Sprint, Task, TaskPriority } from "@prisma/client";
+import { Board, Sprint } from "@prisma/client";
 
 export const createSprint = async (data: {
   title: Sprint["title"];
@@ -15,7 +15,6 @@ export const createSprint = async (data: {
 
 export const endSprint = async (boardId: Board["id"]) => {
   try {
-    // Find the active sprint
     const activeSprint = await prisma.sprint.findFirst({
       where: {
         boardId,
@@ -27,7 +26,6 @@ export const endSprint = async (boardId: Board["id"]) => {
       throw new Error("Нет активных спринтов");
     }
 
-    // Clear column assignments for all tasks in the sprint
     await prisma.task.updateMany({
       where: {
         sprintId: activeSprint.id,
@@ -39,7 +37,6 @@ export const endSprint = async (boardId: Board["id"]) => {
       },
     });
 
-    // Update sprint status to completed
     await prisma.sprint.update({
       where: { id: activeSprint.id },
       data: { status: "COMPLETED" },

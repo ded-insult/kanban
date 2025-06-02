@@ -15,6 +15,9 @@ export const createRoleByName = async (name: Role["name"], role: RoleType) => {
   });
 };
 
+/**
+ * @deprecated Использовать registerUserV2
+ */
 export const createUser = async ({
   name,
   password,
@@ -33,13 +36,13 @@ export const createUser = async ({
   });
 };
 
-export const registerUser = async (form: FormData) => {
-  const username = form.get("username") as string;
-  const password = form.get("password") as string;
-  const roleId = form.get("role") as string;
-
+export const registerUserV2 = async (data: {
+  username: string;
+  password: string;
+  roleId: string;
+}) => {
   const existingUser = await prisma.user.findUnique({
-    where: { name: username },
+    where: { name: data.username },
   });
 
   if (existingUser) {
@@ -48,9 +51,9 @@ export const registerUser = async (form: FormData) => {
 
   await prisma.user.create({
     data: {
-      name: username,
-      password,
-      roleId,
+      name: data.username,
+      password: data.password,
+      roleId: data.roleId,
     },
   });
 };

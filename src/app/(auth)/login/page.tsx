@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/shared/lib/auth";
-import { LoginForm } from "./(components)/login-form";
-import { RegisterFormByAdmin } from "./(components)/register-form-admin";
+import { FormLogin } from "./(components)/form-login";
+import { FormCreateUser } from "./(components)/form-create-user";
 import { getAllRoles } from "./(actions)";
 
 export default async function Page() {
@@ -9,9 +9,9 @@ export default async function Page() {
 
   return (
     <div>
-      {!user && <LoginForm />}
+      {!user && <FormLogin />}
 
-      {user && <RegisterFormByAdmin roles={roles} />}
+      {user && <FormCreateUser roles={roles} />}
     </div>
   );
 }

@@ -114,10 +114,15 @@ export const moveTaskToColumn = async (taskId: string, newColumnId: string) => {
 export const getBoard = async (id: string) =>
   await prisma.board.findUnique({
     where: { id },
-    include: {
+
+    select: {
+      id: true,
+      title: true,
       columns: {
-        orderBy: {
-          position: "asc",
+        orderBy: { position: "asc" },
+        select: {
+          id: true,
+          status: true,
         },
       },
     },

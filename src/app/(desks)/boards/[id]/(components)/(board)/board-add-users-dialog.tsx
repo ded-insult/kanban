@@ -9,14 +9,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
-import { addUserToBoard, getAllUsers } from "../(actions)";
+import { addUserToBoard, getAllUsers } from "../../(actions)";
 
 interface Props {
   boardId: string;
   onUserAdded?: () => void;
 }
 
-export const AddBoardUsersDialog = ({ boardId, onUserAdded }: Props) => {
+export const BoardAddUsersDialog = ({ boardId, onUserAdded }: Props) => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
 

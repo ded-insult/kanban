@@ -2,93 +2,47 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React, { FormEvent, useState } from "react";
-import { BoardData, createBoard } from "../(actions)";
-import { BoardColumn } from "@prisma/client";
+import React from "react";
+import { createBoard } from "../(actions)";
 import { getCurrentUser } from "@/shared/lib/auth";
-import { flushSync } from "react-dom";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "@prisma/client";
+import { toast } from "react-toastify";
 
-enum Step {
-  BACKLOG = "BACKLOG",
-  IN_PGORESS = "IN_PROGRESS",
-  DONE = "DONE",
-}
+const BoardSchema = z.object({
+  title: z.string().min(3, "Название должно содержать хотя бы 3 символа"),
+  ownerId: z.string().optional(),
+});
 
-const localizeSteps: Record<Step, string> = {
-  [Step.BACKLOG]: "Бэклог",
-  [Step.IN_PGORESS]: "В процессе",
-  [Step.DONE]: "Готово",
-};
-
-const initialFormData: BoardData = {
-  columns: [],
-  ownerId: "",
-  title: "",
-};
+type BoardData = z.infer<typeof BoardSchema>;
 
 export const CreateBoardForm = () => {
-  const [formData, setFormData] = useState<BoardData>(initialFormData);
+  const form = useForm({
+    resolver: zodResolver(BoardSchema),
+  });
 
-  const onChangeTitle = (title: BoardData["title"]) => {
-    setFormData((p) => ({ ...p, title }));
-  };
-
-  const onDeleteColumn = (id: BoardColumn["id"]) => {
-    const newColumns: BoardData["columns"] = formData.columns!.filter(
-      (column) => column.id !== id
-    );
-
-    setFormData((p) => ({ ...p, columns: newColumns }));
-  };
-
-  const onAddColumn = (column: BoardColumn) => {
-    const newColumns: BoardData["columns"] = [...formData.columns!, column];
-
-    setFormData((p) => ({ ...p, columns: newColumns }));
-  };
-
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const user = await getCurrentUser();
-    const { id } = user!;
-
-    flushSync(() => {
-      setFormData((p) => ({
-        ...p,
-        ownerId: id,
-      }));
-    });
-
+  const onSubmit = async (data: BoardData) => {
     try {
-      if (!id || !formData.title) {
-        console.log(formData);
-
-        alert("Заполните все поля");
-        return;
-      }
-
-      await createBoard({
-        // columns: formData.columns,
-        ownerId: id,
-        title: formData.title,
-      });
-      alert("Успех");
+      const { id } = (await getCurrentUser()) as User;
+      await createBoard({ ownerId: id, title: data.title });
+      toast.success("Доска успешно создана !", { autoClose: 1750 });
     } catch (e) {
-      alert("Ошибка");
-      return;
+      toast.error("Произошла ошибка, повторите", { autoClose: 1750 });
     }
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <Input
-        name="board-title"
-        value={formData.title}
-        onChange={(e) => onChangeTitle(e.target.value)}
-        placeholder="Название доски"
+        {...form.register("title")}
+        name="title"
+        placeholder="Название проекта"
+        error={form.formState.errors.title}
       />
 
-      <Button type="submit">Отправить</Button>
+      <Button>Отправить</Button>
     </form>
   );
 };

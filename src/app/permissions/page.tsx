@@ -1,7 +1,7 @@
 import { ProtectedRoute } from "@/app/(protected)/protected-route";
 import { getCurrentUser } from "@/shared/lib/auth";
 import { redirect } from "next/navigation";
-import { can } from "@/shared/lib/permissions";
+import { Action, can, Entity } from "@/shared/lib/permissions";
 import { actions, entities, roles, translations } from "./(constants)";
 
 export default async function Page() {
@@ -69,7 +69,9 @@ export default async function Page() {
                             : ""
                         }`}
                       >
-                        {can(role, entity as any, action as any) ? "✅" : "❌"}
+                        {can(role, entity as Entity, action as Action)
+                          ? "✅"
+                          : "❌"}
                       </td>
                     ))}
                   </tr>

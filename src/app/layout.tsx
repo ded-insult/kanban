@@ -4,7 +4,7 @@ import { BoardIcon, LinkUI, PermissionIcon } from "@/components/ui/link";
 import React from "react";
 import { routes } from "@/shared/constants/routes";
 import { Header } from "./header";
-
+import { ToastContainer } from "react-toastify";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -41,6 +41,7 @@ export default async function RootLayout({
             <main className="flex-1 p-4 overflow-auto">{render()}</main>
           </div>
         </div>
+        <ToastContainer />
       </body>
     </html>
   );

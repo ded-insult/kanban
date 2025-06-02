@@ -1,14 +1,11 @@
 import { Card } from "@/components/ui/card";
-import { BoardColumn } from "@prisma/client";
 
 export const BoardColumnLayout = ({
   column,
-  canCreatetask,
   children,
   onDragEnter,
 }: {
-  column: BoardColumn;
-  canCreatetask: boolean;
+  column: { id: string; status: string };
   onDragEnter: (value: string) => void;
   children: React.ReactNode;
 }) => {
@@ -19,9 +16,7 @@ export const BoardColumnLayout = ({
         onDragEnter={() => {
           onDragEnter(column.id);
         }}
-        className={`w-80 bg-gray-100 rounded-xl p-4 flex-shrink-0 flex flex-col ${
-          `` // pending ? "pointer-events-none" : ""
-        }`}
+        className={`w-80 bg-gray-100 rounded-xl p-4 flex-shrink-0 flex flex-col`}
       >
         <Card.Title className="flex items-center justify-between mb-4 px-2">
           <span>Статус: </span>
@@ -29,21 +24,6 @@ export const BoardColumnLayout = ({
             {column.status}
           </span>
         </Card.Title>
-
-        {canCreatetask && (
-          <div className="mb-4">
-            {/* {sprintId && (
-                  <CreateTaskDialog
-                    sprintId={sprintId.id}
-                    userId={user.id}
-                    userRole={user.role.role}
-                    boardId={board.id}
-                    userList={userList}
-                    columnId={column.id}
-                  />
-                )} */}
-          </div>
-        )}
 
         <div className="flex-1 overflow-y-auto">{children}</div>
       </Card.Wrapper>

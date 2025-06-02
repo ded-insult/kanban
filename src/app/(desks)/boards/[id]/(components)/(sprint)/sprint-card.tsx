@@ -66,9 +66,11 @@ export const SprintCard = ({
       className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-blue-500 duration-0
  bg-white rounded-lg p-3 border border-gray-100 transition-colors"
     >
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold text-gray-900">{sprint.title}</h2>
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between mb-3">
+        <h2 className="text-lg font-semibold overflow-hidden text-ellipsis text-gray-900">
+          {sprint.title}
+        </h2>
+        <div className="flex items-center gap-2 mt-2 sm:mt-0">
           <span
             className={`px-3 py-1 ${
               sprintStatusStyles[sprint.status]
@@ -106,7 +108,6 @@ export const SprintCard = ({
         <div className="mt-4">
           <div className="w-full bg-gray-200 rounded-full h-1.5">
             <div
-              // className="bg-blue-600 h-1.5 rounded-full animate-pulse"
               className="bg-blue-600 h-1.5 rounded-full"
               style={{ width: sprintCompletion[sprint.status] }}
             ></div>
@@ -126,29 +127,29 @@ export const SprintCard = ({
         </div>
 
         <div className="mt-6">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-gray-700">
-              Задачи спринта:
-            </h3>
-            <div className="flex items-center gap-2">
-              <Input
-                placeholder="Поиск задач..."
-                className="h-8 w-48"
-                value={filter.title}
-                onChange={filter.handleTitleChange}
-              />
-              <Button variant="ghost" size="sm" onClick={card.handleExpand}>
-                {card.isExpanded ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+          <div className="relative w-full mt-2 sm:mt-0">
+            <Input
+              placeholder="Поиск задач..."
+              className="h-8 w-full pr-10"
+              value={filter.title}
+              onChange={filter.handleTitleChange}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={card.handleExpand}
+              className="absolute top-1/2 right-2 -translate-y-1/2 p-1"
+            >
+              {card.isExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
           </div>
 
           {card.isExpanded && (
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
               {sprint.backlog.length > 0 ? (
                 filter.filteredTasks.map((task) => (
                   <div
@@ -163,26 +164,16 @@ export const SprintCard = ({
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        {/* <span
-                          className={`text-xs px-2 py-1 rounded-full ${
-                            {
-                              LOW: "bg-gray-100 text-gray-700",
-                              MEDIUM: "bg-blue-100 text-blue-700",
-                              HIGH: "bg-orange-100 text-orange-700",
-                              URGENT: "bg-red-100 text-red-700",
-                            }[task.priority]
-                          }`}
-                        >
-                          {priorityLabels[task.priority]}
-                        </span> */}
                         <LabelTask priority={task.priority} />
                       </div>
                     </div>
+
                     {task.description && (
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-gray-500 mt-2 line-clamp-2">
                         {task.description}
                       </p>
                     )}
+
                     {(task.startDate || task.endDate) && (
                       <div className="flex items-center mt-2 text-xs text-gray-500">
                         <Clock className="w-3 h-3 mr-1" />
@@ -196,9 +187,9 @@ export const SprintCard = ({
                     {canDeleteCardTask && (
                       <Button
                         variant="destructive"
-                        onClick={() => {
-                          deleteSprintTask(task.id);
-                        }}
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => deleteSprintTask(task.id)}
                       >
                         Удалить
                       </Button>

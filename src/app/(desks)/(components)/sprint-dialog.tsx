@@ -10,58 +10,64 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { createSprint } from "../(actions)/sprint-actions";
 import { useParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FieldError } from "react-hook-form";
+import { z } from "zod";
+import { toast } from "react-toastify";
 
-interface SprintFormData {
-  title: string;
-  startDate: string;
-  endDate: string;
-}
+const sprintSchema = z
+  .object({
+    title: z.string().min(3, "Название должно содержать минимум 3 символа"),
+    startDate: z.preprocess(
+      (arg) => {
+        if (typeof arg === "string" && arg.trim() === "") return undefined;
+        return typeof arg === "string" ? new Date(arg) : arg;
+      },
+      z.date({
+        required_error: "Дата начала обязательна",
+        invalid_type_error: "Введите корректную дату начала",
+      })
+    ),
 
-const initialFormData: SprintFormData = {
-  title: "",
-  startDate: "",
-  endDate: "",
-};
+    endDate: z.preprocess((arg) => {
+      if (typeof arg === "string" && arg.trim() === "") return undefined;
+      return typeof arg === "string" ? new Date(arg) : arg;
+    }, z.date({ required_error: "Дата конца обязательна", invalid_type_error: "Введите корректную дату конца" })),
+  })
+  .refine((data) => data.startDate <= data.endDate, {
+    message: "Дата начала не может быть позже даты окончания",
+    path: ["startDate"],
+  });
 
-export const SprintDialog = ({
-  onSprintCreated,
-}: {
-  onSprintCreated?: () => void;
-}) => {
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState<SprintFormData>(initialFormData);
-  const params = useParams<{ id: string }>();
+type SprintData = z.infer<typeof sprintSchema>;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+export const SprintDialog = () => {
+  const { id } = useParams<{ id: string }>();
 
+  const form = useForm({
+    resolver: zodResolver(sprintSchema),
+  });
+
+  const onSubmit = async (data: SprintData) => {
     try {
       await createSprint({
-        title: formData.title,
-        boardId: params.id,
-        startDate: new Date(formData.startDate),
-        endDate: new Date(formData.endDate),
+        boardId: id,
+        endDate: data.endDate,
+        startDate: data.startDate,
+        title: data.title,
       });
-
-      setOpen(false);
-      setFormData(initialFormData);
-      onSprintCreated?.();
-    } catch (error) {
-      console.error("Error creating sprint:", error);
-      alert("Ошибка при создании спринта");
+      toast.success("Спринт успешно создан", { autoClose: 1750 });
+      form.reset();
+    } catch (e) {
+      toast.error("Произошла ошибка", { autoClose: 1750 });
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <Plus className="w-4 h-4 mr-2" />
@@ -72,18 +78,17 @@ export const SprintDialog = ({
         <DialogHeader>
           <DialogTitle>Создать новый спринт</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
           <div className="space-y-2">
             <label htmlFor="title" className="text-sm font-medium">
               Название спринта
             </label>
             <Input
+              {...form.register("title")}
               id="title"
               name="title"
-              value={formData.title}
-              onChange={handleChange}
+              error={form.formState.errors.title}
               placeholder="Введите название спринта"
-              required
             />
           </div>
 
@@ -92,12 +97,11 @@ export const SprintDialog = ({
               Дата начала
             </label>
             <Input
+              {...form.register("startDate")}
               id="startDate"
               name="startDate"
+              error={form.formState.errors.startDate as FieldError}
               type="date"
-              value={formData.startDate}
-              onChange={handleChange}
-              required
             />
           </div>
 
@@ -106,12 +110,11 @@ export const SprintDialog = ({
               Дата окончания
             </label>
             <Input
+              {...form.register("endDate")}
               id="endDate"
               name="endDate"
+              error={form.formState.errors.endDate as FieldError}
               type="date"
-              value={formData.endDate}
-              onChange={handleChange}
-              required
             />
           </div>
 
@@ -119,7 +122,7 @@ export const SprintDialog = ({
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              // onClick={() => setOpen(false)}
             >
               Отмена
             </Button>

@@ -5,8 +5,10 @@ export const BoardColumnTaskCard = ({
   task,
   onDragEnd,
   onDragStart,
+  edit,
 }: {
   task: FullTask;
+  edit: React.ReactNode;
   onDragEnd: () => void;
   onDragStart: (e: React.DragEvent<HTMLDivElement>, taskId: string) => void;
 }) => {
@@ -18,25 +20,14 @@ export const BoardColumnTaskCard = ({
       className={`task-card bg-white border border-gray-200 shadow-sm rounded-lg p-6 hover:shadow-md transition-shadow cursor-move
     `}
     >
+      {edit}
       <div className="flex justify-between items-start mb-4">
         <div className="flex flex-col gap-2 flex-1 mr-2">
           <h3 className="task-title text-lg font-semibold text-gray-900 break-words">
             {task.title}
           </h3>
-          {/* <span
-            className={`text-xs px-2 py-1 rounded-full w-fit ${
-              priorityColors[task.priority]
-            }`}
-          >
-            {priorityLabels[task.priority]}
-          </span> */}
 
           <LabelTask priority={task.priority} />
-          {/* <EditTaskDialog
-            userRole={user!.role.role}
-            task={task}
-            userList={userList}
-          /> */}
         </div>
       </div>
       Исполнитель:
@@ -48,9 +39,6 @@ export const BoardColumnTaskCard = ({
           <div className="flex flex-col">
             <span className="text-sm font-medium text-gray-700">
               Имя:{task.assignee.name}
-              {/* {task.assignee?.id === user?.id && (
-                <span className="text-xs text-gray-500">(Вы)</span>
-              )} */}
             </span>
             <span className="text-xs text-gray-500">
               Роль:{task.assignee.role.name}

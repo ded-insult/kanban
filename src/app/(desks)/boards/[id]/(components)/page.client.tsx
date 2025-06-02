@@ -23,8 +23,11 @@ import {
   canStartSprint,
 } from "./(sprint)/model/control";
 import { SprintCard } from "./(sprint)/sprint-card";
-import { CreateTaskExtendedDialog } from "./create-task-extened-dialog";
-import { CreateTaskDialog } from "./create-task-dialog";
+import { BoardCreateTaskExtendedDialog } from "./(board)/board-create-task-extened-dialog";
+import { SprintCreateTaskDialog } from "./(sprint)/sprint-create-task-dialog";
+import { canUpdateBoard, canUpdateSprint } from "./(board)/model/control";
+import { BoardProvider } from "./board-context";
+import { BoardEditTaskDialog } from "@/app/(desks)/boards/[id]/(components)/(board)/board-edit-task-dialog";
 
 interface Props {
   id: string;
@@ -48,82 +51,92 @@ export const BoardClientView = ({
   const draggable = useDragColumnCard();
 
   return (
-    <Tabs defaultValue="sprint">
-      <TabsList className="flex gap-8 bg-transparent">
-        <TabsTrigger
-          className="cursor-pointer border-b-2 text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
-          value="sprint"
-        >
-          Спринты
-        </TabsTrigger>
-        <TabsTrigger
-          className="cursor-pointer border-b-2 text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
-          value="desk"
-        >
-          Доска
-        </TabsTrigger>
-      </TabsList>
+    <BoardProvider initialUser={user}>
+      <Tabs defaultValue="sprint">
+        <TabsList className="flex gap-8 bg-transparent">
+          <TabsTrigger
+            className="cursor-pointer border-b-2 text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
+            value="sprint"
+          >
+            Спринты
+          </TabsTrigger>
+          <TabsTrigger
+            className="cursor-pointer border-b-2 text-xl font-medium px-8 py-4 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all"
+            value="desk"
+          >
+            Доска
+          </TabsTrigger>
+        </TabsList>
 
-      <TabsContent value="sprint">
-        <ContentLayout header="Спринты" actions={<SprintDialog />}>
-          {sprints?.map((sprint) => (
-            <SprintCard
-              key={sprint.id}
-              sprint={sprint}
-              boardId={id}
-              canDeleteSprint={canDeleteSprint(user, sprint)}
-              canDeleteCardTask={canDeleteTask(user, sprint)}
-              // canStart={canStartSprint(sprints, sprint)}
-              canStart={true}
-              bottomRightAction={
-                <CreateTaskDialog
-                  key="create-dialog-key"
-                  sprintId={sprint.id}
-                />
-              }
-            />
-          ))}
-        </ContentLayout>
-      </TabsContent>
-
-      <TabsContent value="desk">
-        <ContentLayout
-          header={board?.title}
-          actions={<BoardActions boardId={id} user={user} />}
-        >
-          <BoardContentLayout>
-            {board?.columns.map((column) => (
-              <BoardColumnLayout
-                key={column.id}
-                column={column}
-                onDragEnter={draggable.onDragEnter}
-                canCreatetask={can(user!.role.role, "task", "create")}
-              >
-                <CreateTaskExtendedDialog
-                  boardId={id}
-                  canAddParticipant={can(user!.role.role, "board", "update")}
-                  sprintId={sprint?.id ?? ""}
-                  columnId={column.id}
-                  userList={participants}
-                />
-
-                {tasks
-                  .filter((group) => group.columnId === column.id)
-                  .flatMap((group) =>
-                    group.tasks.map((task) => (
-                      <BoardColumnTaskCard
-                        key={task.id}
-                        task={task}
-                        onDragEnd={draggable.onDragEnd}
-                        onDragStart={draggable.onDragStart}
-                      />
-                    ))
-                  )}
-              </BoardColumnLayout>
+        <TabsContent value="sprint">
+          <ContentLayout header="Спринты" actions={<SprintDialog />}>
+            {sprints?.map((sprint) => (
+              <SprintCard
+                key={sprint.id}
+                sprint={sprint}
+                boardId={id}
+                canDeleteSprint={canDeleteSprint(user, sprint)}
+                canDeleteCardTask={canDeleteTask(user, sprint)}
+                canStart={canStartSprint(sprints, sprint)}
+                bottomRightAction={
+                  <SprintCreateTaskDialog sprintId={sprint.id} />
+                }
+              />
             ))}
-          </BoardContentLayout>
-        </ContentLayout>
-      </TabsContent>
-    </Tabs>
+          </ContentLayout>
+        </TabsContent>
+
+        <TabsContent value="desk">
+          <ContentLayout
+            header={board?.title ?? ""}
+            actions={
+              <BoardActions
+                canUpdateBoard={canUpdateBoard(user!.role.role)}
+                canUpdateSprint={canUpdateSprint(user!.role.role)}
+                boardId={id}
+              />
+            }
+          >
+            <BoardContentLayout>
+              {board?.columns.map((column) => (
+                <BoardColumnLayout
+                  key={column.id}
+                  column={column}
+                  onDragEnter={draggable.onDragEnter}
+                >
+                  <BoardCreateTaskExtendedDialog
+                    boardId={id}
+                    canAddParticipant={can(user!.role.role, "board", "update")}
+                    sprintId={sprint?.id ?? ""}
+                    columnId={column.id}
+                    userList={participants}
+                  />
+
+                  {tasks
+                    .filter((group) => group.columnId === column.id)
+                    .flatMap((group) =>
+                      group.tasks.map((task) => (
+                        <BoardColumnTaskCard
+                          key={task.id}
+                          task={task}
+                          edit={
+                            <BoardEditTaskDialog
+                              task={task}
+                              userList={participants}
+                              canDelete={can(user?.role.role, "task", "delete")}
+                            />
+                          }
+                          onDragEnd={draggable.onDragEnd}
+                          onDragStart={draggable.onDragStart}
+                        />
+                      ))
+                    )}
+                </BoardColumnLayout>
+              ))}
+            </BoardContentLayout>
+          </ContentLayout>
+        </TabsContent>
+      </Tabs>
+    </BoardProvider>
   );
 };

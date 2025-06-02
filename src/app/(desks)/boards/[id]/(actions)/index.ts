@@ -1,9 +1,9 @@
 "use server";
 import { prisma } from "@/shared/lib/prisma";
 import { Board, Prisma, Sprint, Task, TaskPriority } from "@prisma/client";
-import { NewTask } from "../(components)/create-task-extened-dialog";
 import { cookies } from "next/headers";
 import { User } from "../page";
+import { TaskFormData } from "../(components)/(board)/board-create-task-extened-dialog";
 
 interface Test {
   title: Sprint["title"];
@@ -137,37 +137,30 @@ export const createTask = async ({
   title,
   description,
   columnId,
-  sectionId,
+  // sectionId,
   assigneeId,
   sprintId,
   startDate,
   endDate,
   subtasks = [],
-  // creatorId,
+  creatorId,
   priority,
   approved = false,
-}: NewTask) => {
-  const cookie = (await cookies()).get("user")?.value;
-
-  if (!cookie) {
-    throw new Error("No user found");
-  }
-
-  const user = (await JSON.parse(cookie)) as User;
-
-  if (!user) {
-    throw new Error("No user found");
-  }
-
-  console.log(user, "bebra");
-
+}: TaskFormData & {
+  approved: boolean;
+  creatorId: string;
+  subtasks: string[];
+  sprintId: string;
+  // sectionId: string;
+  columnId: string;
+}) => {
   return await prisma.task.create({
     data: {
-      creatorId: user.id,
+      creatorId,
       title,
       description,
       columnId,
-      sectionId,
+      // sectionId,
       assigneeId,
       sprintId,
       startDate,
@@ -198,14 +191,12 @@ export const createSprintTask = async (data: Test) => {
   }
 
   return await prisma.task.create({
-    // data,
     data: {
       title: data.title,
       description: data.description,
       priority: data.priority,
       startDate: data.startDate,
       endDate: data.endDate,
-      // creatorId: data.creatorId,
       creatorId: user?.id,
       sprintId: data.sprintId,
     },

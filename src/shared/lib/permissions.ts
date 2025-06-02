@@ -1,6 +1,6 @@
 import { RoleType } from "@prisma/client";
 
-type Entity =
+export type Entity =
   | "board"
   | "column"
   | "task"
@@ -9,7 +9,7 @@ type Entity =
   | "section"
   | "user";
 
-type Action = "create" | "update" | "delete";
+export type Action = "create" | "update" | "delete";
 
 const permissions: Record<RoleType, Record<Entity, Record<Action, boolean>>> = {
   ADMIN: {

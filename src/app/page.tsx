@@ -3,7 +3,7 @@ import { LinkUI } from "@/components/ui/link";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth";
 import { prisma } from "@/shared/lib/prisma";
-import { RegisterFormByAdmin } from "@/app/(auth)/login/(components)/register-form-admin";
+import { FormCreateUser } from "@/app/(auth)/login/(components)/form-create-user";
 import { checkAdminV2 } from "@/shared/lib/check-admin";
 import { Role, User } from "@prisma/client";
 
@@ -28,7 +28,7 @@ export default async function Home() {
       )}
 
       {checkAdminV2(user as User & { role: Role }) && (
-        <RegisterFormByAdmin roles={roles} />
+        <FormCreateUser roles={roles} />
       )}
     </div>
   );
