@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { LinkUI } from "@/components/ui/link";
 import { routes } from "@/shared/constants/routes";
 import { endSprint } from "@/app/(desks)/(actions)/sprint-actions";
+import { toast } from "react-toastify";
 
 export const BoardActions = ({
   boardId,
@@ -15,11 +16,10 @@ export const BoardActions = ({
   const handleEndSprint = async () => {
     try {
       await endSprint(boardId);
-      alert("Спринт успешно завершен");
+      toast.success("Спринт успешно завершен");
     } catch (error) {
       console.error("Error ending sprint:", error);
-      alert("Ошибка при завершении спринта");
-    } finally {
+      toast.error("Ошибка при завершении спринта");
     }
   };
 

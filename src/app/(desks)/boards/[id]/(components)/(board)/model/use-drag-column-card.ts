@@ -1,5 +1,6 @@
 import { moveTaskToColumn } from "@/app/(desks)/(actions)";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 interface DragState {
   taskId: string;
@@ -30,9 +31,9 @@ export const useDragColumnCard = () => {
 
     try {
       await moveTaskToColumn(dragState.taskId, dragState.targetColumnId);
-      alert("Успех");
+      // alert("Успех");
     } catch (e) {
-      alert("Ошибка");
+      toast.error("Ошибка");
     }
   };
 

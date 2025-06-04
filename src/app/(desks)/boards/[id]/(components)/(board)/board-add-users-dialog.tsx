@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { addUserToBoard, getAllUsers } from "../../(actions)";
+import { toast } from "react-toastify";
 
 interface Props {
   boardId: string;
@@ -26,7 +27,7 @@ export const BoardAddUsersDialog = ({ boardId, onUserAdded }: Props) => {
         setUsers(users);
       })
       .catch(() => {
-        alert("Ошибка, попробуйте обновить страницу");
+        toast.error("Ошибка, попробуйте обновить страницу");
       });
   }, []);
 

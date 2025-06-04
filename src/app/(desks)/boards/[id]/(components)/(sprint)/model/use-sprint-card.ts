@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { deleteSprint, startSprint } from "../../../(actions)";
+import { toast } from "react-toastify";
 
 export const useSprintCard = (boardId: string) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -13,7 +14,7 @@ export const useSprintCard = (boardId: string) => {
       //   setSprints(updatedSprints);
     } catch (error) {
       console.error("Error starting sprint:", error);
-      alert("Создайте хотя бы одну колонку для доски");
+      toast.warn("Создайте хотя бы одну колонку для доски");
     }
   };
 
@@ -32,7 +33,7 @@ export const useSprintCard = (boardId: string) => {
       //   setSprints(updatedSprints);
     } catch (error) {
       console.error("Error deleting sprint:", error);
-      alert("Ошибка при удалении спринта");
+      toast.error("Ошибка при удалении спринта");
     }
   };
 

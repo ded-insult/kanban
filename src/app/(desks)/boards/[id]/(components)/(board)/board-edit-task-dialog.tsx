@@ -29,7 +29,7 @@ interface EditTaskDialogProps {
 const taskSchema = z.object({
   title: z.string().min(1, "Название обязательно"),
   description: z.string().optional(),
-  asssigneId: z.string().optional(),
+  assigneeId: z.string().optional(),
   priority: z.nativeEnum(TaskPriority),
 });
 
@@ -43,7 +43,7 @@ export const BoardEditTaskDialog = ({
   const form = useForm({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      asssigneId: task.assigneeId as string | undefined,
+      assigneeId: task.assigneeId as string | undefined,
       description: task.description as string | undefined,
       priority: task.priority,
       title: task.title,
@@ -56,23 +56,18 @@ export const BoardEditTaskDialog = ({
     if (confirm("Вы уверены, что хотите удалить задачу?")) {
       try {
         await deleteTask(task.id);
-        alert("Задача удалена");
+        toast.success("Задача удалена");
       } catch (error) {
-        alert("Ошибка при удалении задачи");
+        toast.error("Неудачно");
       }
     }
   };
 
   const onSubmit = async (data: TaskFormData) => {
-    // alert(1);
     try {
-      // throw Error();
       await updateTask({
+        ...data,
         id: task.id,
-        assigneeId: task.assigneeId,
-        priority: data.priority,
-        title: data.title,
-        description: data.description,
         subtasks: subtasksUpdate.data,
       });
       toast.success("Данные обновлены");
@@ -140,7 +135,7 @@ export const BoardEditTaskDialog = ({
             <div>
               <label className="block mb-2">Исполнитель</label>
               <select
-                {...form.register("asssigneId")}
+                {...form.register("assigneeId")}
                 name="assigneeId"
                 className="w-full p-2 border rounded"
               >
