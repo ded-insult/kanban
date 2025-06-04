@@ -34,11 +34,11 @@ export const ColumnCreateForm = memo(
           position: columnPosition,
           boardId,
         });
-        toast.success("Столбец добавлен");
+        toast.success("Столбец добавлен", { autoClose: 1750 });
         form.reset();
       } catch (e) {
         console.error("Ошибка", e);
-        toast.error("Ошибка");
+        toast.error("Ошибка", { autoClose: 1750 });
       }
     };
     return (

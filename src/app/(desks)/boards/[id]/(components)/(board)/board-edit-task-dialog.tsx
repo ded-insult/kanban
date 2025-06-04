@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSubtasksUpdate } from "./model/use-subtasks-update";
 import { toast } from "react-toastify";
+import { Input } from "@/components/ui/input";
 
 interface EditTaskDialogProps {
   task: Task & {
@@ -43,7 +44,7 @@ export const BoardEditTaskDialog = ({
   const form = useForm({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      assigneeId: task.assigneeId as string | undefined,
+      assigneeId: task.assigneeId || "",
       description: task.description as string | undefined,
       priority: task.priority,
       title: task.title,
@@ -56,9 +57,9 @@ export const BoardEditTaskDialog = ({
     if (confirm("Вы уверены, что хотите удалить задачу?")) {
       try {
         await deleteTask(task.id);
-        toast.success("Задача удалена");
+        toast.success("Задача удалена", { autoClose: 1750 });
       } catch (error) {
-        toast.error("Неудачно");
+        toast.error("Неудачно", { autoClose: 1750 });
       }
     }
   };
@@ -67,12 +68,14 @@ export const BoardEditTaskDialog = ({
     try {
       await updateTask({
         ...data,
+        assigneeId: data.assigneeId || null,
         id: task.id,
         subtasks: subtasksUpdate.data,
       });
-      toast.success("Данные обновлены");
+      toast.success("Данные обновлены", { autoClose: 1750 });
     } catch (e) {
-      toast.error("Ошибка");
+      toast.error("Ошибка", { autoClose: 1750 });
+      console.error("Ошибка при удалении задачи:", e);
     }
   };
 
@@ -93,8 +96,9 @@ export const BoardEditTaskDialog = ({
           <div className="flex flex-col gap-4">
             <div>
               <label className="block mb-2">Название</label>
-              <input
+              <Input
                 {...form.register("title")}
+                error={form.formState.errors.title}
                 type="text"
                 name="title"
                 className="w-full p-2 border rounded"
@@ -114,7 +118,7 @@ export const BoardEditTaskDialog = ({
 
               {subtasksUpdate.data.map((task) => (
                 <div key={task.id} className="flex items-center gap-2 mb-2">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={task.completed}
                     onChange={subtasksUpdate.updateSubtask(
@@ -123,8 +127,9 @@ export const BoardEditTaskDialog = ({
                     )}
                     className="mr-2"
                   />
-                  <input
+                  <Input
                     type="text"
+                    // error={form.formState.errors.title?.message}
                     value={task.title}
                     onChange={subtasksUpdate.updateSubtask(task.id, "title")}
                     className="flex-1 p-2 border rounded"

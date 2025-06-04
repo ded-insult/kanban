@@ -67,7 +67,7 @@ interface UpdateTaskData {
   description?: string;
   priority: TaskPriority;
   subtasks: Subtask[];
-  assigneeId?: Task["assigneeId"];
+  assigneeId: Task["assigneeId"];
 }
 
 export const updateTask = async ({

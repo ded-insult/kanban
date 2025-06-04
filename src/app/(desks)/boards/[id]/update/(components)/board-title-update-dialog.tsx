@@ -41,17 +41,17 @@ export const BoardTitleUpdateDialog = ({
   const onSubmit = async (data: TitleFormData) => {
     try {
       await updateBoardTitle(boardId, data.title);
-      toast.success("Успешно");
+      toast.success("Успешно", { autoClose: 1750 });
     } catch (error) {
       console.error("Ошибка при обновлении названия доски", error);
-      toast.error("Ошибка при обновлении названия доски");
+      toast.error("Ошибка при обновлении названия доски", { autoClose: 1750 });
     }
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-4">
+        <Button size="sm" className="ml-4">
           Изменить название
         </Button>
       </DialogTrigger>

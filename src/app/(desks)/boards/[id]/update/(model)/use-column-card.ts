@@ -17,6 +17,14 @@ export const useColumnCard = () => {
   const columnsRef = useRef<HTMLDivElement[]>([]);
 
   const onDelete = async (id: string) => {
+    if (
+      !confirm(
+        "При удалении столбца удалятся все задачи вместе с ним, вы уверены, что хотите удалить столбец ?"
+      )
+    ) {
+      return;
+    }
+
     try {
       await deleteBoardColumn(id);
     } catch (e) {

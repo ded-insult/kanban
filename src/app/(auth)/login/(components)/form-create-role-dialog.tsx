@@ -46,10 +46,10 @@ export const FormCreateRoleDialog = () => {
   const onSubmit = async (data: RoleFormData) => {
     try {
       await createRoleByName(data.name, data.type);
-      toast.success("Роль успешно создана!");
+      toast.success("Роль успешно создана!", { autoClose: 1750 });
       form.reset();
     } catch (error) {
-      toast.error("Возможно, роль уже существует");
+      toast.error("Возможно, роль уже существует", { autoClose: 1750 });
     }
   };
 

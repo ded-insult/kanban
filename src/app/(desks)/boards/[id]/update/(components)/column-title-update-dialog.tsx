@@ -40,10 +40,10 @@ export const ColumnTitleUpdateDialog = ({
         title: data.title,
         status: data.title,
       });
-      toast.success("Успех");
+      toast.success("Успех", { autoClose: 1750 });
     } catch (error) {
       console.error("Ошибка при обновлении столбца", error);
-      toast.error("Ошибка при обновлении столбца");
+      toast.error("Ошибка при обновлении столбца", { autoClose: 1750 });
     }
   };
 

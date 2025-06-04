@@ -28,7 +28,7 @@ export const ColumnCard = ({
       onDragOver={onDragOver}
       onDrop={onDrop}
       onDragEnd={onDragEnd}
-      className={`p-3 border rounded-lg flex justify-between items-center bg-muted`}
+      className={`p-3 border rounded-lg flex justify-between items-center bg-muted hover:bg-muted/80 transition-colors cursor-pointer`}
       ref={(el) => {
         if (el) {
           columnsRef.current[column.position] = el;

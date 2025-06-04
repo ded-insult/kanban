@@ -16,10 +16,10 @@ export const BoardActions = ({
   const handleEndSprint = async () => {
     try {
       await endSprint(boardId);
-      toast.success("Спринт успешно завершен");
+      toast.success("Спринт успешно завершен", { autoClose: 1750 });
     } catch (error) {
       console.error("Error ending sprint:", error);
-      toast.error("Ошибка при завершении спринта");
+      toast.error("Ошибка при завершении спринта", { autoClose: 1750 });
     }
   };
 

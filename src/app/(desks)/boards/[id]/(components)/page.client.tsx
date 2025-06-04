@@ -70,19 +70,25 @@ export const BoardClientView = ({
 
         <TabsContent value="sprint">
           <ContentLayout header="Спринты" actions={<SprintDialog />}>
-            {sprints?.map((sprint) => (
-              <SprintCard
-                key={sprint.id}
-                sprint={sprint}
-                boardId={id}
-                canDeleteSprint={canDeleteSprint(user, sprint)}
-                canDeleteCardTask={canDeleteTask(user, sprint)}
-                canStart={canStartSprint(sprints, sprint)}
-                bottomRightAction={
-                  <SprintCreateTaskDialog sprintId={sprint.id} />
-                }
-              />
-            ))}
+            {sprints.length ? (
+              sprints.map((sprint) => (
+                <SprintCard
+                  key={sprint.id}
+                  sprint={sprint}
+                  boardId={id}
+                  canDeleteSprint={canDeleteSprint(user, sprint)}
+                  canDeleteCardTask={canDeleteTask(user, sprint)}
+                  canStart={canStartSprint(sprints, sprint)}
+                  bottomRightAction={
+                    <SprintCreateTaskDialog sprintId={sprint.id} />
+                  }
+                />
+              ))
+            ) : (
+              <h1 className="text-2xl font-bold text-gray-900">
+                Создайте спринт, у вас нет активных спринтов
+              </h1>
+            )}
           </ContentLayout>
         </TabsContent>
 
@@ -92,47 +98,64 @@ export const BoardClientView = ({
             actions={
               <BoardActions
                 canUpdateBoard={canUpdateBoard(user!.role.role)}
-                canUpdateSprint={canUpdateSprint(user!.role.role)}
+                canUpdateSprint={
+                  sprint?.status === "IN_PROGRESS" &&
+                  canUpdateSprint(user!.role.role)
+                }
                 boardId={id}
               />
             }
           >
             <BoardContentLayout>
-              {board?.columns.map((column) => (
-                <BoardColumnLayout
-                  key={column.id}
-                  column={column}
-                  onDragEnter={draggable.onDragEnter}
-                >
-                  <BoardCreateTaskExtendedDialog
-                    boardId={id}
-                    canAddParticipant={can(user!.role.role, "board", "update")}
-                    sprintId={sprint?.id ?? ""}
-                    columnId={column.id}
-                    userList={participants}
-                  />
+              {board?.columns.length ? (
+                board?.columns.map((column) => (
+                  <BoardColumnLayout
+                    key={column.id}
+                    column={column}
+                    onDragEnter={draggable.onDragEnter}
+                  >
+                    <BoardCreateTaskExtendedDialog
+                      boardId={id}
+                      canAddParticipant={can(
+                        user!.role.role,
+                        "board",
+                        "update"
+                      )}
+                      sprintId={sprint?.id ?? ""}
+                      columnId={column.id}
+                      userList={participants}
+                    />
 
-                  {tasks
-                    .filter((group) => group.columnId === column.id)
-                    .flatMap((group) =>
-                      group.tasks.map((task) => (
-                        <BoardColumnTaskCard
-                          key={task.id}
-                          task={task}
-                          edit={
-                            <BoardEditTaskDialog
-                              task={task}
-                              userList={participants}
-                              canDelete={can(user?.role.role, "task", "delete")}
-                            />
-                          }
-                          onDragEnd={draggable.onDragEnd}
-                          onDragStart={draggable.onDragStart}
-                        />
-                      ))
-                    )}
-                </BoardColumnLayout>
-              ))}
+                    {tasks
+                      .filter((group) => group.columnId === column.id)
+                      .flatMap((group) =>
+                        group.tasks.map((task) => (
+                          <BoardColumnTaskCard
+                            key={task.id}
+                            task={task}
+                            edit={
+                              <BoardEditTaskDialog
+                                task={task}
+                                userList={participants}
+                                canDelete={can(
+                                  user?.role.role,
+                                  "task",
+                                  "delete"
+                                )}
+                              />
+                            }
+                            onDragEnd={draggable.onDragEnd}
+                            onDragStart={draggable.onDragStart}
+                          />
+                        ))
+                      )}
+                  </BoardColumnLayout>
+                ))
+              ) : (
+                <h1 className="text-2xl font-bold mb-6">
+                  Сейчас нет ни одной колонки
+                </h1>
+              )}
             </BoardContentLayout>
           </ContentLayout>
         </TabsContent>
