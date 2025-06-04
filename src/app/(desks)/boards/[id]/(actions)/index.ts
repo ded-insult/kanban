@@ -45,7 +45,8 @@ export const startSprint = async (
     });
 
     if (!firstColumn) {
-      throw new Error("Нет колонок на доске");
+      return { success: false };
+      // throw new Error("Нет колонок на доске");
     }
 
     // Get all tasks from the sprint

@@ -3,8 +3,9 @@ import "@/shared/globals.css";
 import { BoardIcon, LinkUI, PermissionIcon } from "@/components/ui/link";
 import React from "react";
 import { routes } from "@/shared/constants/routes";
-import { Header } from "./header";
 import { ToastContainer } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { getCurrentUser, logout } from "@/shared/lib/auth";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -20,28 +21,19 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const render = () => {
-    // if (loading) return <FullScreenLoader />;
-    // if (error) return "Что-то пошло не по плану";
-
-    return children;
-  };
-
   return (
     <html lang="ru" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        {/* <AuthProvider> */}
         <div className="flex flex-col h-screen">
           <Header />
 
           <div className="flex flex-1 overflow-hidden">
             <Sidebar />
 
-            {/* Main Content */}
-            <main className="flex-1 p-4 overflow-auto">{render()}</main>
+            <main className="flex-1 p-4 overflow-auto">{children}</main>
           </div>
         </div>
-        <ToastContainer />
+        <ToastContainer limit={2} />
       </body>
     </html>
   );
@@ -65,5 +57,39 @@ const Sidebar = () => {
         </LinkUI>
       </nav>
     </aside>
+  );
+};
+
+export const Header = async () => {
+  const user = await getCurrentUser();
+
+  return (
+    <header className="bg-blue-500 text-white p-4 h-[60px] flex items-center justify-between w-full">
+      <h1 className="text-2xl font-bold">
+        <LinkUI
+          theme="light"
+          // className="text-white-900 hover:text-gray-400"
+          href={routes.home}
+        >
+          Мониторинг процессов
+        </LinkUI>
+      </h1>
+
+      <div>
+        {user?.name}
+
+        {user && (
+          <Button onClick={logout} className="justify-end">
+            Выйти
+          </Button>
+        )}
+
+        {!user && (
+          <LinkUI href={routes.login}>
+            <Button className="justify-end">Войти</Button>
+          </LinkUI>
+        )}
+      </div>
+    </header>
   );
 };

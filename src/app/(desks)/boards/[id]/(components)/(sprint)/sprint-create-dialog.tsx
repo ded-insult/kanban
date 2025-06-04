@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
-import { createSprint } from "../(actions)/sprint-actions";
+import { createSprint } from "../../../../(actions)/sprint-actions";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,7 +44,7 @@ const sprintSchema = z
 
 type SprintData = z.infer<typeof sprintSchema>;
 
-export const SprintDialog = () => {
+export const SprintCreateDialog = () => {
   const { id } = useParams<{ id: string }>();
 
   const form = useForm({

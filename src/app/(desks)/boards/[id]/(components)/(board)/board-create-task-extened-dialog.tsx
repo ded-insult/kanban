@@ -16,7 +16,7 @@ import { TaskPriority } from "@prisma/client";
 import { BoardAddUsersDialog } from "./board-add-users-dialog";
 import { BoardParticipants } from "../../page";
 import { PriorityOptionsList } from "@/components/ui/task-label";
-import { useBoardContext } from "../board-context";
+import { useBoardContext } from "./board-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { toast } from "react-toastify";

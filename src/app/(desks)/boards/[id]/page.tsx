@@ -3,7 +3,7 @@ import { getBoardParticipant, getBoard } from "../../(actions)";
 import { getBoardTasksGroupedByColumns, getSprints } from "./(actions)";
 
 import { getCurrentSprint } from "../../(actions)/sprint-actions";
-import { BoardClientView } from "./(components)/page.client";
+import { BoardClientView } from "./page.client";
 
 export type Board = Awaited<ReturnType<typeof getBoard>>;
 export type BoardParticipants = Awaited<ReturnType<typeof getBoardParticipant>>;

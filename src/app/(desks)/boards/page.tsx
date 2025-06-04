@@ -3,7 +3,7 @@ import { ProjectCard } from "./(components)/project-card";
 import { getCurrentUser } from "@/shared/lib/auth";
 import { routes } from "@/shared/constants/routes";
 import { redirect } from "next/navigation";
-import { ContentLayout } from "../(components)/content-layout";
+import { ContentLayout } from "../(layout)/content-layout";
 import { ProjectActions } from "./(components)/project-actions";
 import { prisma } from "@/shared/lib/prisma";
 import { checkAdminV2 } from "@/shared/lib/check-admin";

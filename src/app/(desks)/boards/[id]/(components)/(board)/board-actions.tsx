@@ -14,6 +14,9 @@ export const BoardActions = ({
   boardId: string;
 }) => {
   const handleEndSprint = async () => {
+    if (!confirm("Если вы закончите спринт, все задачи из него удалятся")) {
+      return;
+    }
     try {
       await endSprint(boardId);
       toast.success("Спринт успешно завершен", { autoClose: 1750 });

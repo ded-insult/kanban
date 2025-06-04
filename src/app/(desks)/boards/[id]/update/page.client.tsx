@@ -1,5 +1,5 @@
 "use client";
-import { ContentLayout } from "@/app/(desks)/(components)/content-layout";
+import { ContentLayout } from "@/app/(desks)/(layout)/content-layout";
 import { BoardTitleUpdateDialog } from "./(components)/board-title-update-dialog";
 import { ColumnCard } from "./(components)/column-card";
 import { ColumnCardActions } from "./(components)/column-card-actionts";

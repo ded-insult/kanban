@@ -5,7 +5,7 @@ import React, {
   ReactNode,
   useMemo,
 } from "react";
-import { User } from "../page";
+import { User } from "../../page";
 
 interface BoardContextType {
   user: User | null;

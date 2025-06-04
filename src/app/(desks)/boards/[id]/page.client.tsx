@@ -1,33 +1,29 @@
 "use client";
 
-import { ContentLayout } from "@/app/(desks)/(components)/content-layout";
-import { SprintDialog } from "@/app/(desks)/(components)/sprint-dialog";
+import { ContentLayout } from "@/app/(desks)/(layout)/content-layout";
 import { can } from "@/shared/lib/permissions";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
-import {
-  Board,
-  BoardParticipants,
-  Sprint,
-  Sprints,
-  Tasks,
-  User,
-} from "../page";
-import { BoardActions } from "./(board)/board-actions";
-import { BoardColumnLayout } from "./(board)/board-column-layout";
-import { BoardColumnTaskCard } from "./(board)/board-column-task-card";
-import { BoardContentLayout } from "./(board)/board-content-layout";
-import { useDragColumnCard } from "./(board)/model/use-drag-column-card";
+import { Board, BoardParticipants, Sprint, Sprints, Tasks, User } from "./page";
+import { BoardActions } from "./(components)/(board)/board-actions";
+import { BoardColumnLayout } from "./(components)/(board)/board-column-layout";
+import { BoardColumnTaskCard } from "./(components)/(board)/board-column-task-card";
+import { BoardContentLayout } from "./(components)/(board)/board-content-layout";
+import { useDragColumnCard } from "./(components)/(board)/model/use-drag-column-card";
 import {
   canDeleteSprint,
   canDeleteTask,
   canStartSprint,
-} from "./(sprint)/model/control";
-import { SprintCard } from "./(sprint)/sprint-card";
-import { BoardCreateTaskExtendedDialog } from "./(board)/board-create-task-extened-dialog";
-import { SprintCreateTaskDialog } from "./(sprint)/sprint-create-task-dialog";
-import { canUpdateBoard, canUpdateSprint } from "./(board)/model/control";
-import { BoardProvider } from "./board-context";
+} from "./(components)/(sprint)/model/control";
+import { SprintCard } from "./(components)/(sprint)/sprint-card";
+import { BoardCreateTaskExtendedDialog } from "./(components)/(board)/board-create-task-extened-dialog";
+import { SprintCreateTaskDialog } from "./(components)/(sprint)/sprint-create-task-dialog";
+import {
+  canUpdateBoard,
+  canUpdateSprint,
+} from "./(components)/(board)/model/control";
+import { BoardProvider } from "./(components)/(board)/board-context";
 import { BoardEditTaskDialog } from "@/app/(desks)/boards/[id]/(components)/(board)/board-edit-task-dialog";
+import { SprintCreateDialog } from "./(components)/(sprint)/sprint-create-dialog";
 
 interface Props {
   id: string;
@@ -69,7 +65,7 @@ export const BoardClientView = ({
         </TabsList>
 
         <TabsContent value="sprint">
-          <ContentLayout header="Спринты" actions={<SprintDialog />}>
+          <ContentLayout header="Спринты" actions={<SprintCreateDialog />}>
             {sprints.length ? (
               sprints.map((sprint) => (
                 <SprintCard
@@ -98,11 +94,11 @@ export const BoardClientView = ({
             actions={
               <BoardActions
                 canUpdateBoard={canUpdateBoard(user!.role.role)}
+                boardId={id}
                 canUpdateSprint={
                   sprint?.status === "IN_PROGRESS" &&
                   canUpdateSprint(user!.role.role)
                 }
-                boardId={id}
               />
             }
           >

@@ -8,10 +8,12 @@ export const useSprintCard = (boardId: string) => {
 
   const handleStartSprint = async (sprintId: string) => {
     try {
-      await startSprint(sprintId, boardId);
-      // Refresh sprints data
-      //   const updatedSprints = await getSprint(id);
-      //   setSprints(updatedSprints);
+      const result = await startSprint(sprintId, boardId);
+
+      if (!result.success) {
+        toast.warn("Создайте хотя бы одну колонку для доски");
+        return;
+      }
     } catch (error) {
       console.error("Error starting sprint:", error);
       toast.warn("Создайте хотя бы одну колонку для доски");
