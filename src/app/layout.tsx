@@ -4,8 +4,8 @@ import { BoardIcon, LinkUI, PermissionIcon } from "@/components/ui/link";
 import React from "react";
 import { routes } from "@/shared/constants/routes";
 import { ToastContainer } from "react-toastify";
-import { Button } from "@/components/ui/button";
-import { getCurrentUser, logout } from "@/shared/lib/auth";
+import { Header } from "./header";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -57,39 +57,5 @@ const Sidebar = () => {
         </LinkUI>
       </nav>
     </aside>
-  );
-};
-
-export const Header = async () => {
-  const user = await getCurrentUser();
-
-  return (
-    <header className="bg-blue-500 text-white p-4 h-[60px] flex items-center justify-between w-full">
-      <h1 className="text-2xl font-bold">
-        <LinkUI
-          theme="light"
-          // className="text-white-900 hover:text-gray-400"
-          href={routes.home}
-        >
-          Мониторинг процессов
-        </LinkUI>
-      </h1>
-
-      <div>
-        {user?.name}
-
-        {user && (
-          <Button onClick={logout} className="justify-end">
-            Выйти
-          </Button>
-        )}
-
-        {!user && (
-          <LinkUI href={routes.login}>
-            <Button className="justify-end">Войти</Button>
-          </LinkUI>
-        )}
-      </div>
-    </header>
   );
 };
