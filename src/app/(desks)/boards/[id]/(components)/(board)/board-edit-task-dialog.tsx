@@ -117,7 +117,7 @@ export const BoardEditTaskDialog = ({
               <label className="block mb-2">Подзадачи</label>
 
               {subtasksUpdate.data.map((task) => (
-                <div key={task.id} className="flex items-center gap-2 mb-2">
+                <div key={task.id} className="flex items-center gap-3 mb-2">
                   <Input
                     type="checkbox"
                     checked={task.completed}
@@ -125,14 +125,13 @@ export const BoardEditTaskDialog = ({
                       task.id,
                       "completed"
                     )}
-                    className="mr-2"
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <Input
                     type="text"
-                    // error={form.formState.errors.title?.message}
                     value={task.title}
                     onChange={subtasksUpdate.updateSubtask(task.id, "title")}
-                    className="flex-1 p-2 border rounded"
+                    className="flex-1 min-w-0"
                   />
                 </div>
               ))}

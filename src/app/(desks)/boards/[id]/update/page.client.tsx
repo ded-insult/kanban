@@ -38,14 +38,14 @@ export const PageClient = ({
         />
       }
     >
-      <ColumnLayout header="Список столбцов">
+      <ColumnLayout header="Новый столбец">
         <ColumnCreateForm
           boardId={boardId}
           columnPosition={newColumnPosition}
         />
       </ColumnLayout>
 
-      <ColumnLayout header="Новый столбец">
+      <ColumnLayout header="Список столбцов">
         {sortedColumns.length ? (
           sortedColumns.map((column) => (
             <ColumnCard

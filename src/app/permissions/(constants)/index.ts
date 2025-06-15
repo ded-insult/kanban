@@ -14,7 +14,7 @@ export const translations = {
     task: "Задача",
     subtask: "Подзадача",
     sprint: "Спринт",
-    section: "Секция",
+    // section: "Секция",
     user: "Пользователь",
   },
   actions: {
@@ -35,7 +35,7 @@ export const entities = [
   "task",
   "subtask",
   "sprint",
-  "section",
+  // "section",
   "user",
 ];
 export const actions = ["create", "update", "delete"];
