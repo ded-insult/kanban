@@ -1,4 +1,5 @@
 import { moveTaskToColumn } from "@/app/(desks)/(actions)";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -16,6 +17,7 @@ const initilDragState: DragState = {
 export const useDragColumnCard = () => {
   const [dragState, setDragState] = useState<DragState>(initilDragState);
 
+  const router = useRouter();
   const onDragStart = (_: React.DragEvent<HTMLDivElement>, taskId: string) => {
     setDragState((p) => ({ ...p, taskId }));
   };
@@ -31,6 +33,8 @@ export const useDragColumnCard = () => {
 
     try {
       await moveTaskToColumn(dragState.taskId, dragState.targetColumnId);
+
+      router.refresh();
       // alert("Успех");
     } catch (e) {
       toast.error("Ошибка");

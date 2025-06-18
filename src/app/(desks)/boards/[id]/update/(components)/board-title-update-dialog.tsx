@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 interface UpdateBoardTitleDialogProps {
   boardId: string;
@@ -31,6 +32,7 @@ export const BoardTitleUpdateDialog = ({
   boardId,
   initialTitle,
 }: UpdateBoardTitleDialogProps) => {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(titleSchema),
     defaultValues: {
@@ -42,6 +44,7 @@ export const BoardTitleUpdateDialog = ({
     try {
       await updateBoardTitle(boardId, data.title);
       toast.success("Успешно", { autoClose: 1750 });
+      router.refresh();
     } catch (error) {
       console.error("Ошибка при обновлении названия доски", error);
       toast.error("Ошибка при обновлении названия доски", { autoClose: 1750 });

@@ -94,6 +94,17 @@ export async function logout() {
   redirect(routes.home);
 }
 
+export async function getRoles() {
+  const roles = await prisma.role.findMany();
+
+  if (!roles || roles.length === 0) {
+    // throw new Error("Роли не найдены");
+    return [];
+  }
+
+  return roles;
+}
+
 export async function getCurrentUser(): Promise<
   (User & { role: Role }) | null
 > {

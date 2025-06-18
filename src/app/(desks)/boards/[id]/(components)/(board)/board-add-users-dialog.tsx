@@ -11,6 +11,7 @@ import {
 import { useState, useEffect } from "react";
 import { addUserToBoard, getAllUsers } from "../../(actions)";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 interface Props {
   boardId: string;
@@ -20,6 +21,7 @@ interface Props {
 export const BoardAddUsersDialog = ({ boardId, onUserAdded }: Props) => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     getAllUsers()
@@ -36,6 +38,7 @@ export const BoardAddUsersDialog = ({ boardId, onUserAdded }: Props) => {
       setLoading(true);
       await addUserToBoard(boardId, userId);
       onUserAdded?.();
+      router.refresh();
     } catch (error) {
       console.error("Error adding user:", error);
     } finally {

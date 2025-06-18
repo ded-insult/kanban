@@ -1,4 +1,6 @@
-import { prisma } from "@/shared/lib/prisma";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 async function main() {
   // Создание роли ADMIN (если нет)

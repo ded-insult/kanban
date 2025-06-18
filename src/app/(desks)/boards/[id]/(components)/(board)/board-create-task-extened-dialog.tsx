@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { toast } from "react-toastify";
 import { useSubtasksCreate } from "./model/use-subtasks-create";
+import { useRouter } from "next/navigation";
 
 const taskSchema = z
   .object({
@@ -60,6 +61,7 @@ export const BoardCreateTaskExtendedDialog = ({
 }: Props) => {
   const { user } = useBoardContext();
   const subtasks = useSubtasksCreate();
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -88,6 +90,7 @@ export const BoardCreateTaskExtendedDialog = ({
       toast.success("Успешно", { autoClose: 1750 });
       form.reset();
       subtasks.empty();
+      router.refresh();
     } catch (e) {
       toast.error("Ошибка, проверьте поля", { autoClose: 1750 });
     }

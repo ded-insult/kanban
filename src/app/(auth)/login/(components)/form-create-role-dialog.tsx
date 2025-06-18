@@ -28,6 +28,7 @@ import { createRoleByName } from "../(actions)";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 const roleSchema = z.object({
   name: z.string().min(3, "Название роли должно содержать минимум 3 символа"),
@@ -39,15 +40,21 @@ const roleSchema = z.object({
 type RoleFormData = z.infer<typeof roleSchema>;
 
 export const FormCreateRoleDialog = () => {
+  const router = useRouter();
   const form = useForm<RoleFormData>({
     resolver: zodResolver(roleSchema),
+    defaultValues: {
+      name: "",
+      type: RoleType.DEVELOPER,
+    },
   });
 
   const onSubmit = async (data: RoleFormData) => {
     try {
       await createRoleByName(data.name, data.type);
       toast.success("Роль успешно создана!", { autoClose: 1750 });
-      form.reset();
+      form.resetField("name");
+      router.refresh();
     } catch (error) {
       toast.error("Возможно, роль уже существует", { autoClose: 1750 });
     }
@@ -82,11 +89,7 @@ export const FormCreateRoleDialog = () => {
             control={form.control}
             name="type"
             render={({ field }) => (
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                value={field.value}
-              >
+              <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger
                   error={form.formState.errors.type}
                   className="w-full"

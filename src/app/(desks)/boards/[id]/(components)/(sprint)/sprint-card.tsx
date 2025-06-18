@@ -12,6 +12,8 @@ import { Sprint, SprintStatus, Task } from "@prisma/client";
 import { useSprintCard } from "./model/use-sprint-card";
 import { useFilters } from "./model/use-filters";
 import { LabelTask } from "@/components/ui/task-label";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 type NewSprint = Sprint & {
   backlog: Task[];
@@ -58,6 +60,7 @@ export const SprintCard = ({
   canDeleteCardTask: boolean;
   bottomRightAction: React.ReactNode;
 }) => {
+  const router = useRouter();
   const card = useSprintCard(boardId);
   const filter = useFilters(sprint);
 
@@ -189,7 +192,16 @@ export const SprintCard = ({
                         variant="destructive"
                         size="sm"
                         className="mt-2"
-                        onClick={() => deleteSprintTask(task.id)}
+                        onClick={async () => {
+                          try {
+                            await deleteSprintTask(task.id);
+                            router.refresh();
+                          } catch (error) {
+                            toast.error(
+                              "Ошибка при удалении задачи из спринта"
+                            );
+                          }
+                        }}
                       >
                         Удалить
                       </Button>

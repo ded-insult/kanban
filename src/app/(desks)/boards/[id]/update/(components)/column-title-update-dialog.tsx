@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { updateBoardColumn } from "../(actions)";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const columnSchema = z.object({
   title: z.string().min(1, "Название столбца обязательно"),
@@ -26,6 +27,7 @@ export const ColumnTitleUpdateDialog = ({
   columnId: string;
   initialTitle: string;
 }) => {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(columnSchema),
     defaultValues: {
@@ -41,6 +43,7 @@ export const ColumnTitleUpdateDialog = ({
         status: data.title,
       });
       toast.success("Успех", { autoClose: 1750 });
+      router.refresh();
     } catch (error) {
       console.error("Ошибка при обновлении столбца", error);
       toast.error("Ошибка при обновлении столбца", { autoClose: 1750 });

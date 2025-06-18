@@ -7,6 +7,7 @@ import { createBoardColumn } from "../(actions)";
 import { toast } from "react-toastify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { memo } from "react";
+import { useRouter } from "next/navigation";
 
 const columnHeaderSchema = z.object({
   title: z.string().min(1, "Название обязательно"),
@@ -22,6 +23,7 @@ export const ColumnCreateForm = memo(
     boardId: string;
     columnPosition: number;
   }) => {
+    const router = useRouter();
     const form = useForm({
       resolver: zodResolver(columnHeaderSchema),
     });
@@ -36,6 +38,7 @@ export const ColumnCreateForm = memo(
         });
         toast.success("Столбец добавлен", { autoClose: 1750 });
         form.reset();
+        router.refresh();
       } catch (e) {
         console.error("Ошибка", e);
         toast.error("Ошибка", { autoClose: 1750 });

@@ -17,6 +17,7 @@ import { TaskPriority } from "@prisma/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 interface Props {
   sprintId: string;
@@ -56,6 +57,7 @@ const taskSchema = z
 type TaskFormData = z.infer<typeof taskSchema>;
 
 export const SprintCreateTaskDialog = ({ sprintId }: Props) => {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -75,6 +77,7 @@ export const SprintCreateTaskDialog = ({ sprintId }: Props) => {
       });
       toast.success("карточка создана", { autoClose: 1750 });
       form.reset();
+      router.refresh();
     } catch (e) {
       toast.error("Ошибка при создании карточки", { autoClose: 1750 });
     }

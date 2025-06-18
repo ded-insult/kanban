@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { createSprint } from "../../../../(actions)/sprint-actions";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldError } from "react-hook-form";
@@ -46,7 +46,7 @@ type SprintData = z.infer<typeof sprintSchema>;
 
 export const SprintCreateDialog = () => {
   const { id } = useParams<{ id: string }>();
-
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(sprintSchema),
   });
@@ -61,6 +61,7 @@ export const SprintCreateDialog = () => {
       });
       toast.success("Спринт успешно создан", { autoClose: 1750 });
       form.reset();
+      router.refresh();
     } catch (e) {
       toast.error("Произошла ошибка", { autoClose: 1750 });
     }

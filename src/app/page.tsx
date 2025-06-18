@@ -1,17 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { LinkUI } from "@/components/ui/link";
 import { routes } from "@/shared/constants/routes";
-import { getCurrentUser } from "@/shared/lib/auth";
-import { prisma } from "@/shared/lib/prisma";
+import { getCurrentUser, getRoles } from "@/shared/lib/auth";
 import { FormCreateUser } from "@/app/(auth)/login/(components)/form-create-user";
 import { checkAdminV2 } from "@/shared/lib/check-admin";
 import { Role, User } from "@prisma/client";
 
 export default async function Home() {
-  const [user, roles] = await Promise.all([
-    getCurrentUser(),
-    prisma.role.findMany(),
-  ]);
+  const [user, roles] = await Promise.all([getCurrentUser(), getRoles()]);
 
   const isAdmin = checkAdminV2(user as User & { role: Role });
 

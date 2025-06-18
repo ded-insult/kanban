@@ -2,9 +2,11 @@
 import { useState } from "react";
 import { deleteSprint, startSprint } from "../../../(actions)";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export const useSprintCard = (boardId: string) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const router = useRouter();
 
   const handleStartSprint = async (sprintId: string) => {
     try {
@@ -14,6 +16,7 @@ export const useSprintCard = (boardId: string) => {
         toast.warn("Создайте хотя бы одну колонку для доски");
         return;
       }
+      router.refresh();
     } catch (error) {
       console.error("Error starting sprint:", error);
       toast.warn("Создайте хотя бы одну колонку для доски");
@@ -33,6 +36,7 @@ export const useSprintCard = (boardId: string) => {
       await deleteSprint(sprintId);
       //   const updatedSprints = await getSprint(id);
       //   setSprints(updatedSprints);
+      router.refresh();
     } catch (error) {
       console.error("Error deleting sprint:", error);
       toast.error("Ошибка при удалении спринта");

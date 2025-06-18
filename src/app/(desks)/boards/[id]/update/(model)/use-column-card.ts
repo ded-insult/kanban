@@ -2,6 +2,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { deleteBoardColumn, moveBoardColumnPosition } from "../(actions)";
+import { useRouter } from "next/navigation";
 
 type MyColumn = {
   id: string;
@@ -15,6 +16,7 @@ export const useColumnCard = () => {
   const [draggedItem, setDraggedItem] = useState<MyColumn | null>(null);
   const [pending, setPending] = useState(false);
   const columnsRef = useRef<HTMLDivElement[]>([]);
+  const router = useRouter();
 
   const onDelete = async (id: string) => {
     if (
@@ -27,6 +29,7 @@ export const useColumnCard = () => {
 
     try {
       await deleteBoardColumn(id);
+      router.refresh();
     } catch (e) {
       alert("Ошибка");
     }
@@ -81,6 +84,7 @@ export const useColumnCard = () => {
             newPosition: draggedItem.position,
           }),
         ]);
+        router.refresh();
       } catch (error) {
         console.error("Error updating positions:", error);
         alert("Не удалось обновить позиции");

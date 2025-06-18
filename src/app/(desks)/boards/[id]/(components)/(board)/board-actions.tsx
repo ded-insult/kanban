@@ -3,6 +3,7 @@ import { LinkUI } from "@/components/ui/link";
 import { routes } from "@/shared/constants/routes";
 import { endSprint } from "@/app/(desks)/(actions)/sprint-actions";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export const BoardActions = ({
   boardId,
@@ -13,6 +14,7 @@ export const BoardActions = ({
   canUpdateSprint: boolean;
   boardId: string;
 }) => {
+  const router = useRouter();
   const handleEndSprint = async () => {
     if (!confirm("Если вы закончите спринт, все задачи из него удалятся")) {
       return;
@@ -20,6 +22,7 @@ export const BoardActions = ({
     try {
       await endSprint(boardId);
       toast.success("Спринт успешно завершен", { autoClose: 1750 });
+      router.refresh();
     } catch (error) {
       console.error("Error ending sprint:", error);
       toast.error("Ошибка при завершении спринта", { autoClose: 1750 });

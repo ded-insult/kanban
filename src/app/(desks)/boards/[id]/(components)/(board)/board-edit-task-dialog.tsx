@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSubtasksUpdate } from "./model/use-subtasks-update";
 import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 interface EditTaskDialogProps {
   task: Task & {
@@ -41,6 +42,7 @@ export const BoardEditTaskDialog = ({
   userList,
   canDelete,
 }: EditTaskDialogProps) => {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -58,6 +60,7 @@ export const BoardEditTaskDialog = ({
       try {
         await deleteTask(task.id);
         toast.success("Задача удалена", { autoClose: 1750 });
+        router.refresh();
       } catch (error) {
         toast.error("Неудачно", { autoClose: 1750 });
       }
@@ -73,6 +76,7 @@ export const BoardEditTaskDialog = ({
         subtasks: subtasksUpdate.data,
       });
       toast.success("Данные обновлены", { autoClose: 1750 });
+      router.refresh();
     } catch (e) {
       toast.error("Ошибка", { autoClose: 1750 });
       console.error("Ошибка при удалении задачи:", e);
