@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL_LOCAL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum RoleType {
@@ -80,7 +80,7 @@ model Task {
   priority    TaskPriority @default(LOW)
   creatorId   String
   creator     User         @relation("CreatedTasks", fields: [creatorId], references: [id])
-  columnId    String?      // Made optional
+  columnId    String? // Made optional
   column      BoardColumn? @relation(fields: [columnId], references: [id], name: "ColumnTasks", onDelete: Cascade)
   sectionId   String?
   section     Section?     @relation(fields: [sectionId], references: [id], name: "SectionTasks", onDelete: SetNull)

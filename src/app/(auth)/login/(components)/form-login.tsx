@@ -1,7 +1,9 @@
 "use client";
 import { Input } from "@/components/ui/input";
+import { routes } from "@/shared/constants/routes";
 import { loginV2 } from "@/shared/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -19,6 +21,7 @@ const userSchema = z.object({
 type UserData = z.infer<typeof userSchema>;
 
 export const FormLogin = () => {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(userSchema),
   });
@@ -27,6 +30,7 @@ export const FormLogin = () => {
     try {
       await loginV2({ password: data.password, username: data.username });
       toast.success("Успешно", { autoClose: 1750 });
+      router.push(routes.home);
     } catch (e) {
       toast.error("Произошла ошибка", { autoClose: 1750 });
     }

@@ -20,8 +20,8 @@ import { toast } from "react-toastify";
 import { Label } from "@radix-ui/react-label";
 
 const RegisterSchema = z.object({
-  username: z.string().min(3, "Имя пользователя обязательно"),
-  password: z.string().min(3, "Пароль обязателен"),
+  username: z.string().min(3, "Минимальная длинна от 3 симоволов."),
+  password: z.string().min(3, "Минимальная длинна от 3 симоволов."),
   role: z.string().min(1, "Роль обязательна"),
 });
 type RegisterFormData = z.infer<typeof RegisterSchema>;

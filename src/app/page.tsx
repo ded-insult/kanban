@@ -13,22 +13,59 @@ export default async function Home() {
     prisma.role.findMany(),
   ]);
 
+  const isAdmin = checkAdminV2(user as User & { role: Role });
+
   return (
-    <div>
-      {user && <h1>Добро пожаловать, {user.name}!</h1>}
+    <div className="max-w-4xl mx-auto p-6">
+      {user && (
+        <div className="space-y-6">
+          <h1 className="text-3xl font-bold">Добро пожаловать, {user.name}!</h1>
+
+          {!isAdmin && (
+            <>
+              <div className="prose">
+                <p className="text-lg">
+                  Мы рады видеть вас в нашей системе управления проектами. Здесь
+                  вы можете:
+                </p>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>Просматривать и работать с досками проектов</li>
+                  <li>Отслеживать задачи и их статусы</li>
+                  <li>Взаимодействовать с другими участниками команды</li>
+                </ul>
+              </div>
+
+              <div className="flex gap-4 mt-6">
+                <LinkUI href={routes.boards.initial}>
+                  <Button size="lg">Перейти к доскам</Button>
+                </LinkUI>
+                <LinkUI href={routes.permissions}>
+                  <Button variant="outline" size="lg">
+                    Мои доступы
+                  </Button>
+                </LinkUI>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {!user && (
         <>
-          <h1>Добро пожаловать, войдите в аккаунт</h1>
+          <h1 className="text-3xl font-bold mb-6">
+            Добро пожаловать, войдите в аккаунт
+          </h1>
 
           <LinkUI href={routes.login}>
-            <Button>Войти</Button>
+            <Button size="lg">Войти</Button>
           </LinkUI>
         </>
       )}
 
-      {checkAdminV2(user as User & { role: Role }) && (
-        <FormCreateUser roles={roles} />
+      {isAdmin && (
+        <div className="mt-8">
+          <FormCreateUser roles={roles} />
+        </div>
       )}
     </div>
   );
